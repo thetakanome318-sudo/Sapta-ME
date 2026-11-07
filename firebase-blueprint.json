@@ -1,0 +1,36 @@
+{
+  "entities": {
+    "Project": {
+      "title": "Project",
+      "description": "Project details",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" }
+      },
+      "required": ["id", "name"]
+    },
+    "MaterialSummaryItem": {
+      "title": "MaterialSummaryItem",
+      "description": "Material inventory items",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "material": { "type": "string" },
+        "quantity": { "type": "string" },
+        "spbjId": { "type": "string" }
+      },
+      "required": ["id", "material", "quantity", "spbjId"]
+    }
+  },
+  "firestore": {
+    "/projects/{projectId}": {
+      "schema": "Project",
+      "description": "Collection of projects"
+    },
+    "/materials/{materialId}": {
+      "schema": "MaterialSummaryItem",
+      "description": "Collection of materials"
+    }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "name": "Monitoring Pekerja Proyek ME - PT Sapta Manunggal Karya",
+  "description": "Sistem monitoring pekerja proyek kelistrikan, absensi, K3 elektrikal, penugasan, dan laporan harian Divisi Mekanikal Elektrikal PT Sapta Manunggal Karya.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

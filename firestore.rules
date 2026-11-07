@@ -1,0 +1,23 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helpers
+    function isSignedIn() { return request.auth != null; }
+    function isValidId(id) { return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); }
+    
+    match /projects/{projectId} {
+      allow read: if isSignedIn();
+      allow write: if false; // Read-only for now
+    }
+    
+    match /materials/{materialId} {
+      allow read: if isSignedIn();
+      allow create, update: if isSignedIn(); 
+    }
+    
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
