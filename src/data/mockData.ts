@@ -1,4 +1,4 @@
-import { Worker, Project, TaskAssignment, Equipment, AttendanceRecord, Mandor, SpbjContract, MaterialSummaryItem, UserAccount, BoqItem } from '../types';
+import { Worker, Project, TaskAssignment, Equipment, AttendanceRecord, Mandor, SpbjContract, MaterialSummaryItem, UserAccount, BoqItem, MaterialBongkarItem } from '../types';
 
 export const INITIAL_SPBJ_CONTRACTS: SpbjContract[] = [
   {
@@ -81,6 +81,11 @@ export const INITIAL_MANDORS: Mandor[] = [
     status: 'Aktif On-Site',
     specialization: 'Pemasangan Trafo 2500kVA & Kubikel VCB 20kV',
     notes: 'Penanggung jawab utama tim terminasi kabel 20kV & pengujian isolasi.',
+    ktpPhotoUrl: 'https://images.unsplash.com/photo-1544717305-2782549b5136?w=400&auto=format&fit=crop&q=80',
+    locations: [
+      { id: 'LOC-101', locationName: 'Terminal 3 Substation B-02 (Gardu Utama)', status: 'Aktif', date: '2026-08-19' },
+      { id: 'LOC-102', locationName: 'Terminal 3 Ekspansi Gate 4 (Distribusi 20kV)', status: 'Aktif', date: '2026-09-01' }
+    ]
   },
   {
     id: 'MND-02',
@@ -94,6 +99,11 @@ export const INITIAL_MANDORS: Mandor[] = [
     status: 'Aktif On-Site',
     specialization: 'Alignment Busduct Trunking 4000A & Genset ATS/AMF',
     notes: 'Mengawasi perakitan busduct trunking Cu 4000A.',
+    ktpPhotoUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&auto=format&fit=crop&q=80',
+    locations: [
+      { id: 'LOC-201', locationName: 'Ruang Genset B2 Substation A, Menara SMK', status: 'Aktif', date: '2026-08-20' },
+      { id: 'LOC-202', locationName: 'Basement 3 Jalur Riset Kabel Utama Menara SMK', status: 'Aktif', date: '2026-09-10' }
+    ]
   },
   {
     id: 'MND-03',
@@ -107,6 +117,10 @@ export const INITIAL_MANDORS: Mandor[] = [
     status: 'Aktif On-Site',
     specialization: 'Penarikan Kabel Power NYY & Mounting Cable Tray 600mm',
     notes: 'Fokus pada penarikan feeder NYY 4x240mm2.',
+    ktpPhotoUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&auto=format&fit=crop&q=80',
+    locations: [
+      { id: 'LOC-301', locationName: 'Area Produksi Hall B Line 3, GIIC Cikarang', status: 'Aktif', date: '2026-08-25' }
+    ]
   },
   {
     id: 'MND-04',
@@ -120,6 +134,10 @@ export const INITIAL_MANDORS: Mandor[] = [
     status: 'Aktif On-Site',
     specialization: 'Retrofit Breaker ACB 4000A & Thermal Scan',
     notes: 'Menangani inspeksi kamera termografi FLIR.',
+    ktpPhotoUrl: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&auto=format&fit=crop&q=80',
+    locations: [
+      { id: 'LOC-401', locationName: 'Ruang Panel Main LDP Basement 1, Gedung Cyber 2', status: 'Aktif', date: '2026-09-02' }
+    ]
   },
 ];
 
@@ -647,4 +665,47 @@ export const INITIAL_BOQ_ITEMS: BoqItem[] = [
     realizedPrice: 41400000,
   },
 ];
+
+export const INITIAL_MATERIAL_BONGKAR: MaterialBongkarItem[] = [
+  {
+    id: 'BONGKAR-01',
+    itemCode: 'BKG-01',
+    spbjId: 'SPBJ-001',
+    category: 'Bongkaran JTM',
+    materialName: 'Tiang Besi Bekas 11 Meter (Eks Jaringan Lama)',
+    unit: 'btg',
+    volumeBongkar: 14,
+    condition: 'Baik / Layak Pakai',
+    warehouseLocation: 'Gudang Tual',
+    dateBongkar: '2026-08-22',
+    notes: 'Hasil pembongkaran jalur eksisting Desa Tamangil',
+  },
+  {
+    id: 'BONGKAR-02',
+    itemCode: 'BKG-02',
+    spbjId: 'SPBJ-001',
+    category: 'Bongkaran JTM',
+    materialName: 'Konduktor Bekas A3C 50 mm²',
+    unit: 'kms',
+    volumeBongkar: 3.5,
+    condition: 'Rusak / Scrap',
+    warehouseLocation: 'Gudang Tual',
+    dateBongkar: '2026-08-25',
+    notes: 'Konduktor terkelupas / aus siap dilaporkan ke PLN',
+  },
+  {
+    id: 'BONGKAR-03',
+    itemCode: 'BKG-03',
+    spbjId: 'SPBJ-002',
+    category: 'Bongkaran Trafo / Gardu',
+    materialName: 'Trafo Distribusi Lama 25 kVA (Rusak)',
+    unit: 'unit',
+    volumeBongkar: 1,
+    condition: 'Perlu Perbaikan',
+    warehouseLocation: 'Gudang Ambon',
+    dateBongkar: '2026-09-02',
+    notes: 'Trafo eksisting terbakar diganti unit baru 50 kVA',
+  },
+];
+
 

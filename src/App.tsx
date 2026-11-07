@@ -10,17 +10,16 @@ import {
   INITIAL_MDU_MATERIALS,
   INITIAL_NON_MDU_MATERIALS,
   INITIAL_USERS,
-  INITIAL_BOQ_ITEMS
+  INITIAL_BOQ_ITEMS,
+  INITIAL_MATERIAL_BONGKAR
 } from './data/mockData';
-import { Project, Worker, TaskAssignment, Equipment, AttendanceRecord, Mandor, SpbjContract, MaterialSummaryItem, UserAccount, BoqItem } from './types';
+import { Project, Worker, TaskAssignment, Equipment, AttendanceRecord, Mandor, SpbjContract, MaterialSummaryItem, UserAccount, BoqItem, MaterialBongkarItem } from './types';
 
 import { Sidebar } from './components/Sidebar';
 import { Header } from './components/Header';
-import { DashboardView } from './components/DashboardView';
 import { AttendanceView } from './components/AttendanceView';
 import { TaskJsaView } from './components/TaskJsaView';
 import { EquipmentView } from './components/EquipmentView';
-import { AiAssistantView } from './components/AiAssistantView';
 import { MandorView } from './components/MandorView';
 import { SpbjView } from './components/SpbjView';
 import { BoqView } from './components/BoqView';
@@ -33,6 +32,7 @@ import { EquipmentMonitoringView } from './components/EquipmentMonitoringView';
 import { PpeMonitoringView } from './components/PpeMonitoringView';
 import { MduMonitoringView } from './components/MduMonitoringView';
 import { NonMduMonitoringView } from './components/NonMduMonitoringView';
+import { MaterialBongkarView } from './components/MaterialBongkarView';
 import { LogisticsLaborCostView } from './components/LogisticsLaborCostView';
 import { WarehouseView } from './components/WarehouseView';
 import { WarehouseAmbonView } from './components/WarehouseAmbonView';
@@ -43,7 +43,7 @@ import { CheckInModal } from './components/CheckInModal';
 import { LoginView } from './components/LoginView';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<string>('dashboard');
+  const [activeTab, setActiveTab] = useState<string>('spbj');
   const [darkMode, setDarkMode] = useState<boolean>(false);
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
 
@@ -62,6 +62,7 @@ export default function App() {
   const [mduMaterials, setMduMaterials] = useState<MaterialSummaryItem[]>(INITIAL_MDU_MATERIALS);
   const [nonMduMaterials, setNonMduMaterials] = useState<MaterialSummaryItem[]>(INITIAL_NON_MDU_MATERIALS);
   const [boqItems, setBoqItems] = useState<BoqItem[]>(INITIAL_BOQ_ITEMS);
+  const [materialBongkarItems, setMaterialBongkarItems] = useState<MaterialBongkarItem[]>(INITIAL_MATERIAL_BONGKAR);
 
   // Modals State
   const [selectedWorkerForModal, setSelectedWorkerForModal] = useState<Worker | null>(null);
@@ -96,6 +97,15 @@ export default function App() {
 
   const handleDeleteBoqItem = (id: string) => {
     setBoqItems(boqItems.filter((i) => i.id !== id));
+  };
+
+  // Material Bongkar Actions
+  const handleAddMaterialBongkar = (newItem: MaterialBongkarItem) => {
+    setMaterialBongkarItems([newItem, ...materialBongkarItems]);
+  };
+
+  const handleDeleteMaterialBongkar = (id: string) => {
+    setMaterialBongkarItems(materialBongkarItems.filter((i) => i.id !== id));
   };
 
   // Actions
@@ -211,19 +221,6 @@ export default function App() {
         />
 
         <main className="flex-1 w-full px-4 sm:px-6 pt-6 pb-16">
-          {activeTab === 'dashboard' && (
-            <DashboardView
-              projects={projects}
-              workers={workers}
-              tasks={tasks}
-              equipment={equipment}
-              spbjList={spbjContracts}
-              onSelectProject={handleSelectProject}
-              onNavigateTab={setActiveTab}
-              onOpenWorkerModal={(w) => setSelectedWorkerForModal(w)}
-            />
-          )}
-
           {activeTab === 'attendance' && (
             <AttendanceView
               workers={workers}
@@ -308,6 +305,15 @@ export default function App() {
             />
           )}
 
+          {activeTab === 'monitoring-bongkar' && (
+            <MaterialBongkarView
+              items={materialBongkarItems}
+              spbjList={spbjContracts}
+              onAddItem={handleAddMaterialBongkar}
+              onDeleteItem={handleDeleteMaterialBongkar}
+            />
+          )}
+
           {activeTab === 'logistics-labor' && (
             <LogisticsLaborCostView />
           )}
@@ -351,10 +357,6 @@ export default function App() {
               projects={projects}
               onUpdateEquipmentStatus={handleUpdateEquipmentStatus}
             />
-          )}
-
-          {activeTab === 'ai-assistant' && (
-            <AiAssistantView projects={projects} workers={workers} />
           )}
         </main>
       </div>

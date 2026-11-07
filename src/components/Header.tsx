@@ -1,5 +1,5 @@
 import React from 'react';
-import { Menu, ShieldCheck, LogOut, UserCheck } from 'lucide-react';
+import { Menu, LogOut, UserCheck } from 'lucide-react';
 import { UserAccount } from '../types';
 
 interface HeaderProps {
@@ -21,7 +21,7 @@ export const Header: React.FC<HeaderProps> = ({
     switch (tab) {
       case 'dashboard': return 'Ringkasan Proyek & Peta Lapangan';
       case 'attendance': return 'Pekerja & Absensi';
-      case 'spbj': return 'Kontrak SPBJ & UP3 PLN';
+      case 'spbj': return 'Daftar SPBJ';
       case 'boq': return 'Bill of Quantities (BOQ) & RAB Pekerjaan';
       case 'mandor': return 'Mandor & Lokasi Pekerjaan';
       case 'monitoring-pekerjaan': return 'Monitoring Progres & Pekerjaan';
@@ -32,6 +32,7 @@ export const Header: React.FC<HeaderProps> = ({
       case 'monitoring-apd': return 'Monitoring APD & Keselamatan';
       case 'monitoring-mdu': return 'Monitoring Material MDU';
       case 'monitoring-nonmdu': return 'Monitoring Material NON MDU';
+      case 'monitoring-bongkar': return 'Monitoring Material Bongkar & Eksisting';
       case 'logistics-labor': return 'Biaya Angkutan & Buruh Lapangan';
       case 'warehouse': return 'Manajemen Gudang & Stok Pusat';
       case 'warehouse-ambon': return 'Manajemen Gudang Ambon';
@@ -39,7 +40,6 @@ export const Header: React.FC<HeaderProps> = ({
       case 'master-data': return 'Master Data User & Akses';
       case 'tasks': return 'Penugasan & Analisis JSA K3';
       case 'equipment': return 'Alat Pengujian & Kalibrasi';
-      case 'ai-assistant': return 'Asisten AI & Laporan Proyek';
       default: return 'Monitoring Proyek ME';
     }
   };
@@ -88,11 +88,6 @@ export const Header: React.FC<HeaderProps> = ({
               )}
             </div>
           )}
-
-          <div className="hidden md:flex items-center gap-2 text-xs bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700">
-            <ShieldCheck className="w-4 h-4 text-emerald-500" />
-            <span className="text-slate-600 dark:text-slate-300">Standard PUIL 2020</span>
-          </div>
         </div>
       </div>
     </header>

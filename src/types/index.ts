@@ -110,19 +110,29 @@ export interface Manpower {
   ktpNumber: string;
 }
 
+export interface MandorLocation {
+  id: string;
+  locationName: string;
+  projectName?: string;
+  status: 'Aktif' | 'Selesai';
+  date: string;
+}
+
 export interface Mandor {
   id: string;
   name: string;
   phone: string;
   projectId: string;
   projectName: string;
-  workLocation: string; // Lokasi pekerjaan spesifik
+  workLocation: string; // Lokasi pekerjaan spesifik utama
   subcontractorTeam: string; // Tim / Vendor
   workerCount: number; // Jumlah teknisi/anggota
   status: 'Aktif On-Site' | 'Off / Standby' | 'Pindah Lokasi';
   specialization: string;
   notes?: string;
   manpowerList?: Manpower[];
+  ktpPhotoUrl?: string; // Foto KTP Mandor
+  locations?: MandorLocation[]; // Multi-lokasi pekerjaan mandor
 }
 
 export interface SpbjContract {
@@ -146,6 +156,20 @@ export interface MaterialSummaryItem {
   unit: string;
   quantity: string;
   spbjId: string; // Connection to SPBJ
+}
+
+export interface MaterialBongkarItem {
+  id: string;
+  itemCode: string;
+  spbjId: string;
+  category: string; // e.g. "Bongkaran JTM", "Bongkaran JTR", "Bongkaran Trafo / Gardu"
+  materialName: string;
+  unit: string;
+  volumeBongkar: number;
+  condition: 'Baik / Layak Pakai' | 'Rusak / Scrap' | 'Perlu Perbaikan';
+  warehouseLocation: string; // e.g. "Gudang Ambon", "Gudang Tual", "Site Proyek"
+  dateBongkar: string;
+  notes?: string;
 }
 
 export interface UserAccount {

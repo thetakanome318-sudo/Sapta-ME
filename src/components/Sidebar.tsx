@@ -1,17 +1,15 @@
 import React, { useState } from 'react';
 import { 
-  LayoutDashboard, 
   Users, 
   FileText, 
   FileSpreadsheet,
   HardHat, 
   CheckSquare, 
   Wrench, 
-  Sparkles, 
   Sun, 
   Moon, 
   UserCheck, 
-  ShieldCheck, 
+  ShieldCheck,
   Zap,
   Menu,
   X,
@@ -59,8 +57,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   };
 
   const navItems = [
-    { id: 'dashboard', label: 'Ringkasan Proyek', icon: LayoutDashboard },
-    { id: 'spbj', label: 'Kontrak SPBJ & UP3', icon: FileText },
+    { id: 'spbj', label: 'Daftar SPBJ', icon: FileText },
     { id: 'boq', label: 'Bill of Quantities (BOQ)', icon: FileSpreadsheet },
     { id: 'mandor', label: 'Mandor & Lokasi', icon: HardHat },
     { 
@@ -74,7 +71,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
         { id: 'monitoring-alat', label: 'Alat Kerja', icon: Wrench },
         { id: 'monitoring-apd', label: 'Monitoring APD', icon: ShieldCheck },
         { id: 'monitoring-mdu', label: 'Material MDU', icon: Package },
-        { id: 'monitoring-nonmdu', label: 'Material NON MDU', icon: Box }
+        { id: 'monitoring-nonmdu', label: 'Material NON MDU', icon: Box },
+        { id: 'monitoring-bongkar', label: 'Material Bongkar', icon: Package }
       ]
     },
     { id: 'master-data', label: 'Master Data', icon: Database },
@@ -88,7 +86,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
         { id: 'warehouse-tual', label: 'Gudang Tual', icon: MapPin }
       ]
     },
-    { id: 'ai-assistant', label: 'Asisten AI & Report', icon: Sparkles },
   ];
 
   return (
@@ -126,20 +123,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
           >
             <X className="w-5 h-5" />
           </button>
-        </div>
-
-        {/* K3 Status & Field Ticker */}
-        <div className="px-5 py-3.5 bg-slate-850 border-b border-slate-800 text-xs space-y-2">
-          <div className="flex items-center gap-2 text-emerald-400">
-            <ShieldCheck className="w-4 h-4 shrink-0" />
-            <span className="font-semibold">1.420 Hari Bebas Kecelakaan</span>
-          </div>
-          <div className="flex items-center justify-between text-slate-400 text-[11px]">
-            <span>Teknisi di Lapangan:</span>
-            <span className="font-mono font-bold text-white bg-slate-800 px-2 py-0.5 rounded">
-              {totalWorkersOnSite} Org
-            </span>
-          </div>
         </div>
 
         {/* Navigation Links */}

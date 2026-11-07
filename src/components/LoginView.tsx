@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { UserAccount } from '../types';
-import { Lock, User, ShieldCheck, ArrowRight, KeyRound, AlertCircle, Sparkles } from 'lucide-react';
+import { Lock, User, ShieldCheck, ArrowRight, KeyRound, AlertCircle, Sparkles, Zap } from 'lucide-react';
+import bgCubicle from '../assets/images/cubicle_substation_bg_1794093274847.jpg';
 
 interface LoginViewProps {
   users: UserAccount[];
@@ -42,8 +43,19 @@ export const LoginView: React.FC<LoginViewProps> = ({ users, onLoginSuccess }) =
 
   return (
     <div className="min-h-screen bg-slate-950 flex flex-col justify-center items-center p-4 relative overflow-hidden font-sans">
-      {/* Background Subtle Mesh / Blueprint Graphic */}
-      <div className="absolute inset-0 opacity-10 pointer-events-none">
+      {/* Background 20kV Cubicle Substation Photo */}
+      <div className="absolute inset-0 z-0">
+        <img 
+          src={bgCubicle} 
+          alt="20kV Electrical Cubicle Substation" 
+          className="w-full h-full object-cover filter brightness-[0.35] contrast-125 scale-105"
+        />
+        {/* Dark Gradient Overlay for Maximum Text Contrast & Professionalism */}
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/85 to-slate-950/60 backdrop-blur-[2px]" />
+      </div>
+
+      {/* Background Subtle Blueprint Grid */}
+      <div className="absolute inset-0 opacity-15 pointer-events-none z-0">
         <svg className="w-full h-full" width="100%" height="100%">
           <defs>
             <pattern id="loginGrid" width="40" height="40" patternUnits="userSpaceOnUse">
@@ -55,7 +67,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ users, onLoginSuccess }) =
       </div>
 
       {/* Main Login Card */}
-      <div className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden z-10">
+      <div className="w-full max-w-md bg-slate-900/90 backdrop-blur-md border border-slate-700/60 rounded-2xl shadow-2xl overflow-hidden z-10">
         {/* Header Branding */}
         <div className="bg-[#002060] p-6 text-white text-center relative space-y-2 border-b border-blue-900">
           <div className="w-12 h-12 rounded-xl bg-amber-400 text-slate-950 font-black text-xl flex items-center justify-center mx-auto shadow-md">
