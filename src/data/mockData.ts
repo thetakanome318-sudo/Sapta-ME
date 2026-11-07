@@ -1,4 +1,4 @@
-import { Worker, Project, TaskAssignment, Equipment, AttendanceRecord, Mandor, SpbjContract, MaterialSummaryItem } from '../types';
+import { Worker, Project, TaskAssignment, Equipment, AttendanceRecord, Mandor, SpbjContract, MaterialSummaryItem, UserAccount, BoqItem } from '../types';
 
 export const INITIAL_SPBJ_CONTRACTS: SpbjContract[] = [
   {
@@ -559,3 +559,92 @@ export const INITIAL_NON_MDU_MATERIALS: MaterialSummaryItem[] = [
   { id: 'NMDU-2', no: 2, category: 'NON MDU JTM', material: 'Kontruksi TM-2 ( Konstruksi T. Penumpu Ganda )', unit: 'set', quantity: '12', spbjId: 'SPBJ-001' },
   { id: 'NMDU-3', no: 1, category: 'NON MDU JTR', material: 'TR-1 S/B ( Konstruksi T. Penyangga)', unit: 'set', quantity: '45', spbjId: 'SPBJ-002' },
 ];
+
+export const INITIAL_USERS: UserAccount[] = [
+  { id: 'USR-01', name: 'Admin Utama', username: 'admin', password: 'admin123', role: 'Admin' },
+  { id: 'USR-02', name: 'Budi Santoso', username: 'budi', password: 'pm123', role: 'Project Manager' },
+  { id: 'USR-03', name: 'Rahmat Hidayat', username: 'rahmat', password: 'teknisi123', role: 'Teknisi' },
+  { id: 'USR-04', name: 'Gudang Ambon', username: 'gudang', password: 'gudang123', role: 'Gudang' },
+];
+
+export const INITIAL_BOQ_ITEMS: BoqItem[] = [
+  {
+    id: 'BOQ-001',
+    itemCode: 'BOQ-JTM-01',
+    spbjId: 'SPBJ-001',
+    category: 'Pekerjaan JTM (Jaringan Tegangan Menengah)',
+    materialOrWork: 'Pengadaan & Pemasangan Tiang Besi 12 Meter 200 daN',
+    unit: 'btg',
+    contractVolume: 142,
+    realizedVolume: 110,
+    unitPrice: 4250000,
+    totalPrice: 603500000,
+    realizedPrice: 467500000,
+  },
+  {
+    id: 'BOQ-002',
+    itemCode: 'BOQ-JTM-02',
+    spbjId: 'SPBJ-001',
+    category: 'Pekerjaan JTM (Jaringan Tegangan Menengah)',
+    materialOrWork: 'Penarikan Konduktor A3C-S 70 mm²',
+    unit: 'kms',
+    contractVolume: 13.022,
+    realizedVolume: 9.85,
+    unitPrice: 28500000,
+    totalPrice: 371127000,
+    realizedPrice: 280725000,
+  },
+  {
+    id: 'BOQ-003',
+    itemCode: 'BOQ-GRD-01',
+    spbjId: 'SPBJ-001',
+    category: 'Pekerjaan Gardu Distribusi',
+    materialOrWork: 'Pemasangan Gardu Portal Trafo 50 kVA 3-Phase + Fused Cut Out',
+    unit: 'unit',
+    contractVolume: 3,
+    realizedVolume: 2,
+    unitPrice: 78500000,
+    totalPrice: 235500000,
+    realizedPrice: 157000000,
+  },
+  {
+    id: 'BOQ-004',
+    itemCode: 'BOQ-JTR-01',
+    spbjId: 'SPBJ-002',
+    category: 'Pekerjaan JTR (Jaringan Tegangan Rendah)',
+    materialOrWork: 'Pemasangan Tiang Besi 9 Meter 200 daN',
+    unit: 'btg',
+    contractVolume: 185,
+    realizedVolume: 160,
+    unitPrice: 3100000,
+    totalPrice: 573500000,
+    realizedPrice: 496000000,
+  },
+  {
+    id: 'BOQ-005',
+    itemCode: 'BOQ-SPL-01',
+    spbjId: 'SPBJ-002',
+    category: 'Pekerjaan Sipil / Pondasi',
+    materialOrWork: 'Pemasangan Pondasi Tiang & Guy Wire/Temberang',
+    unit: 'set',
+    contractVolume: 45,
+    realizedVolume: 40,
+    unitPrice: 1850000,
+    totalPrice: 83250000,
+    realizedPrice: 74000000,
+  },
+  {
+    id: 'BOQ-006',
+    itemCode: 'BOQ-JTM-03',
+    spbjId: 'SPBJ-003',
+    category: 'Pekerjaan JTM (Jaringan Tegangan Menengah)',
+    materialOrWork: 'Pemasangan Lightning Arrester 20kV 5kA',
+    unit: 'set',
+    contractVolume: 15,
+    realizedVolume: 12,
+    unitPrice: 3450000,
+    totalPrice: 51750000,
+    realizedPrice: 41400000,
+  },
+];
+

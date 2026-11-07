@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Package, Download, FileSpreadsheet, Plus, TrendingUp, Edit3, Trash2, Check, X, FileText } from 'lucide-react';
 import { MaterialSummaryItem, SpbjContract } from '../types';
+import { exportMaterialPDF } from '../utils/pdfExport';
 
 interface MduMonitoringViewProps {
   materials: MaterialSummaryItem[];
@@ -84,7 +85,11 @@ export const MduMonitoringView: React.FC<MduMonitoringViewProps> = ({
   };
 
   const downloadReport = (type: 'pdf' | 'excel') => {
-    alert(`Downloading ${type.toUpperCase()} Report for SPBJ: ${selectedSpbjId === 'all' ? 'Semua Proyek' : spbjList.find(s => s.id === selectedSpbjId)?.spbjNumber}`);
+    if (type === 'pdf') {
+      exportMaterialPDF('RINGKASAN MONITORING MATERIAL MDU', materials, spbjList, selectedSpbjId);
+    } else {
+      alert(`Downloading EXCEL Report for SPBJ: ${selectedSpbjId === 'all' ? 'Semua Proyek' : spbjList.find(s => s.id === selectedSpbjId)?.spbjNumber}`);
+    }
   };
 
   return (

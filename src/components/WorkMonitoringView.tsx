@@ -12,8 +12,10 @@ import {
   Zap,
   MoreVertical,
   Activity,
-  MapPin
+  MapPin,
+  Download
 } from 'lucide-react';
+import { exportProgressReportPDF } from '../utils/pdfExport';
 
 interface WorkMonitoringViewProps {
   tasks: TaskAssignment[];
@@ -39,6 +41,11 @@ export const WorkMonitoringView: React.FC<WorkMonitoringViewProps> = ({
     const matchesStatus = statusFilter === 'all' || t.status === statusFilter;
     return matchesSearch && matchesProject && matchesStatus;
   });
+
+  const handleExportPDF = () => {
+    const projName = projectFilter !== 'all' ? projects.find(p => p.id === projectFilter)?.name : undefined;
+    exportProgressReportPDF(filteredTasks, projects, projName);
+  };
 
   const getStatusColor = (status: TaskAssignment['status']) => {
     switch (status) {
@@ -70,6 +77,16 @@ export const WorkMonitoringView: React.FC<WorkMonitoringViewProps> = ({
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
             Pemantauan real-time status penugasan teknisi, progres fisik proyek, dan verifikasi penyelesaian pekerjaan.
           </p>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleExportPDF}
+            className="flex items-center gap-2 px-4 py-2 text-xs font-semibold text-white bg-blue-900 hover:bg-blue-800 rounded-lg shadow-sm transition-colors"
+          >
+            <Download className="w-4 h-4" />
+            <span>Export PDF Laporan Harian</span>
+          </button>
         </div>
       </div>
 

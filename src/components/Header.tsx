@@ -1,22 +1,28 @@
 import React from 'react';
-import { Menu, ShieldCheck, Zap, HardHat } from 'lucide-react';
+import { Menu, ShieldCheck, LogOut, UserCheck } from 'lucide-react';
+import { UserAccount } from '../types';
 
 interface HeaderProps {
   activeTab: string;
   totalWorkersOnSite: number;
   setSidebarOpen: (open: boolean) => void;
+  currentUser?: UserAccount | null;
+  onLogout?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
   activeTab,
   totalWorkersOnSite,
   setSidebarOpen,
+  currentUser,
+  onLogout,
 }) => {
   const getTabTitle = (tab: string) => {
     switch (tab) {
       case 'dashboard': return 'Ringkasan Proyek & Peta Lapangan';
       case 'attendance': return 'Pekerja & Absensi';
       case 'spbj': return 'Kontrak SPBJ & UP3 PLN';
+      case 'boq': return 'Bill of Quantities (BOQ) & RAB Pekerjaan';
       case 'mandor': return 'Mandor & Lokasi Pekerjaan';
       case 'monitoring-pekerjaan': return 'Monitoring Progres & Pekerjaan';
       case 'monitoring-realisasi': return 'Realisasi Pekerjaan & Progres Fisik';
@@ -30,7 +36,7 @@ export const Header: React.FC<HeaderProps> = ({
       case 'warehouse': return 'Manajemen Gudang & Stok Pusat';
       case 'warehouse-ambon': return 'Manajemen Gudang Ambon';
       case 'warehouse-tual': return 'Manajemen Gudang Tual';
-      case 'master-data': return 'Master Data & Referensi';
+      case 'master-data': return 'Master Data User & Akses';
       case 'tasks': return 'Penugasan & Analisis JSA K3';
       case 'equipment': return 'Alat Pengujian & Kalibrasi';
       case 'ai-assistant': return 'Asisten AI & Laporan Proyek';
@@ -61,7 +67,29 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="hidden sm:flex items-center gap-2 text-xs bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700">
+          {currentUser && (
+            <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 pl-3 pr-2 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700">
+              <div className="flex flex-col text-right">
+                <span className="text-xs font-bold text-slate-900 dark:text-white leading-tight">
+                  {currentUser.name}
+                </span>
+                <span className="text-[10px] font-mono font-bold text-amber-600 dark:text-amber-400">
+                  {currentUser.role}
+                </span>
+              </div>
+              {onLogout && (
+                <button
+                  onClick={onLogout}
+                  className="p-1.5 text-slate-400 hover:text-rose-500 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                  title="Keluar / Logout"
+                >
+                  <LogOut className="w-4 h-4" />
+                </button>
+              )}
+            </div>
+          )}
+
+          <div className="hidden md:flex items-center gap-2 text-xs bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700">
             <ShieldCheck className="w-4 h-4 text-emerald-500" />
             <span className="text-slate-600 dark:text-slate-300">Standard PUIL 2020</span>
           </div>

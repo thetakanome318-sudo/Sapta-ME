@@ -8,9 +8,11 @@ import {
   INITIAL_MANDORS,
   INITIAL_SPBJ_CONTRACTS,
   INITIAL_MDU_MATERIALS,
-  INITIAL_NON_MDU_MATERIALS
+  INITIAL_NON_MDU_MATERIALS,
+  INITIAL_USERS,
+  INITIAL_BOQ_ITEMS
 } from './data/mockData';
-import { Project, Worker, TaskAssignment, Equipment, AttendanceRecord, Mandor, SpbjContract, MaterialSummaryItem } from './types';
+import { Project, Worker, TaskAssignment, Equipment, AttendanceRecord, Mandor, SpbjContract, MaterialSummaryItem, UserAccount, BoqItem } from './types';
 
 import { Sidebar } from './components/Sidebar';
 import { Header } from './components/Header';
@@ -21,6 +23,7 @@ import { EquipmentView } from './components/EquipmentView';
 import { AiAssistantView } from './components/AiAssistantView';
 import { MandorView } from './components/MandorView';
 import { SpbjView } from './components/SpbjView';
+import { BoqView } from './components/BoqView';
 import { MasterDataView } from './components/MasterDataView';
 import { WorkMonitoringView } from './components/WorkMonitoringView';
 import { WorkRealizationView } from './components/WorkRealizationView';
@@ -37,10 +40,16 @@ import { WarehouseTualView } from './components/WarehouseTualView';
 import { WorkerDetailModal } from './components/WorkerDetailModal';
 import { CheckInModal } from './components/CheckInModal';
 
+import { LoginView } from './components/LoginView';
+
 export default function App() {
   const [activeTab, setActiveTab] = useState<string>('dashboard');
   const [darkMode, setDarkMode] = useState<boolean>(false);
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
+
+  // User Authentication & Management State
+  const [users, setUsers] = useState<UserAccount[]>(INITIAL_USERS);
+  const [currentUser, setCurrentUser] = useState<UserAccount | null>(INITIAL_USERS[0]);
 
   // Core Datasets
   const [projects, setProjects] = useState<Project[]>(INITIAL_PROJECTS);
@@ -52,6 +61,7 @@ export default function App() {
   const [spbjContracts, setSpbjContracts] = useState<SpbjContract[]>(INITIAL_SPBJ_CONTRACTS);
   const [mduMaterials, setMduMaterials] = useState<MaterialSummaryItem[]>(INITIAL_MDU_MATERIALS);
   const [nonMduMaterials, setNonMduMaterials] = useState<MaterialSummaryItem[]>(INITIAL_NON_MDU_MATERIALS);
+  const [boqItems, setBoqItems] = useState<BoqItem[]>(INITIAL_BOQ_ITEMS);
 
   // Modals State
   const [selectedWorkerForModal, setSelectedWorkerForModal] = useState<Worker | null>(null);
@@ -65,6 +75,28 @@ export default function App() {
       document.documentElement.classList.remove('dark');
     }
   }, [darkMode]);
+
+  // User Actions
+  const handleAddUser = (newUser: UserAccount) => {
+    setUsers([newUser, ...users]);
+  };
+
+  const handleDeleteUser = (id: string) => {
+    setUsers(users.filter((u) => u.id !== id));
+  };
+
+  // BOQ Actions
+  const handleAddBoqItem = (newItem: BoqItem) => {
+    setBoqItems([newItem, ...boqItems]);
+  };
+
+  const handleUpdateBoqItem = (updatedItem: BoqItem) => {
+    setBoqItems(boqItems.map((i) => (i.id === updatedItem.id ? updatedItem : i)));
+  };
+
+  const handleDeleteBoqItem = (id: string) => {
+    setBoqItems(boqItems.filter((i) => i.id !== id));
+  };
 
   // Actions
   const handleSelectProject = (projectId: string) => {
@@ -150,6 +182,10 @@ export default function App() {
   const handleUpdateNonMduMaterials = (updated: MaterialSummaryItem[]) => setNonMduMaterials(updated);
 
   const totalWorkersOnSite = workers.filter((w) => w.status !== 'Belum Presensi').length;
+  
+  if (!currentUser) {
+    return <LoginView users={users} onLoginSuccess={(user) => setCurrentUser(user)} />;
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors font-sans flex">
@@ -170,6 +206,8 @@ export default function App() {
           activeTab={activeTab}
           totalWorkersOnSite={totalWorkersOnSite}
           setSidebarOpen={setSidebarOpen}
+          currentUser={currentUser}
+          onLogout={() => setCurrentUser(null)}
         />
 
         <main className="flex-1 w-full px-4 sm:px-6 pt-6 pb-16">
@@ -202,6 +240,16 @@ export default function App() {
               projects={projects}
               onAddSpbj={handleAddSpbj}
               onUpdateSpbjEndDate={handleUpdateSpbjEndDate}
+            />
+          )}
+
+          {activeTab === 'boq' && (
+            <BoqView
+              boqItems={boqItems}
+              spbjList={spbjContracts}
+              onAddBoqItem={handleAddBoqItem}
+              onUpdateBoqItem={handleUpdateBoqItem}
+              onDeleteBoqItem={handleDeleteBoqItem}
             />
           )}
 
@@ -278,6 +326,9 @@ export default function App() {
 
           {activeTab === 'master-data' && (
             <MasterDataView
+              users={users}
+              onAddUser={handleAddUser}
+              onDeleteUser={handleDeleteUser}
               projects={projects}
               onAddProject={handleAddProject}
             />

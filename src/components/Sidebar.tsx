@@ -3,6 +3,7 @@ import {
   LayoutDashboard, 
   Users, 
   FileText, 
+  FileSpreadsheet,
   HardHat, 
   CheckSquare, 
   Wrench, 
@@ -60,6 +61,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const navItems = [
     { id: 'dashboard', label: 'Ringkasan Proyek', icon: LayoutDashboard },
     { id: 'spbj', label: 'Kontrak SPBJ & UP3', icon: FileText },
+    { id: 'boq', label: 'Bill of Quantities (BOQ)', icon: FileSpreadsheet },
     { id: 'mandor', label: 'Mandor & Lokasi', icon: HardHat },
     { 
       id: 'monitoring-pekerjaan', 

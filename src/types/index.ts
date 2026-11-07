@@ -147,3 +147,26 @@ export interface MaterialSummaryItem {
   quantity: string;
   spbjId: string; // Connection to SPBJ
 }
+
+export interface UserAccount {
+  id: string;
+  name: string;
+  username: string;
+  password?: string;
+  role: 'Admin' | 'Project Manager' | 'Teknisi' | 'Gudang';
+}
+
+export interface BoqItem {
+  id: string;
+  itemCode: string;
+  spbjId: string;
+  category: string; // e.g. "Pekerjaan JTM", "Pekerjaan JTR", "Pekerjaan Gardu Distribusi", "Pekerjaan Sipil"
+  materialOrWork: string; // Uraian Pekerjaan / Material
+  unit: string; // btg, mtr, set, unit, ls, bh
+  contractVolume: number;
+  realizedVolume: number;
+  unitPrice: number; // Harga Satuan (Rp)
+  totalPrice: number; // Total Nilai Kontrak (Rp)
+  realizedPrice: number; // Total Nilai Realisasi (Rp)
+}
+

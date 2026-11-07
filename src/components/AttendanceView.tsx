@@ -11,8 +11,11 @@ import {
   HardHat, 
   Check, 
   X,
-  AlertCircle
+  AlertCircle,
+  Download,
+  FileSpreadsheet
 } from 'lucide-react';
+import { exportAttendancePDF } from '../utils/pdfExport';
 
 interface AttendanceViewProps {
   workers: Worker[];
@@ -52,6 +55,11 @@ export const AttendanceView: React.FC<AttendanceViewProps> = ({
     return matchesSearch && matchesProject && matchesStatus;
   });
 
+  const handleExportPDF = () => {
+    const projName = selectedProjectFilter !== 'all' ? projects.find(p => p.id === selectedProjectFilter)?.name : undefined;
+    exportAttendancePDF(attendanceLog, workers, projName);
+  };
+
   return (
     <div className="space-y-6 pb-12">
       {/* Header Title Bar */}
@@ -65,7 +73,14 @@ export const AttendanceView: React.FC<AttendanceViewProps> = ({
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleExportPDF}
+            className="flex items-center gap-2 px-3.5 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg shadow-xs transition-colors"
+          >
+            <Download className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+            <span>Export PDF Presensi</span>
+          </button>
           <button
             onClick={onOpenCheckIn}
             className="flex items-center gap-2 px-4 py-2 text-xs font-semibold text-slate-950 bg-amber-400 hover:bg-amber-300 rounded-lg shadow-sm shadow-amber-400/20 transition-colors"
