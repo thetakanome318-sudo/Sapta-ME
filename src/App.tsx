@@ -377,7 +377,16 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors font-sans flex">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors font-sans flex relative">
+      {/* Background Wallpaper Watermark (Pekerjaan Jaringan Listrik & Trafo) */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <img
+          src="/assets/aistudio/PZsH67UeSd8OhBsKh3il_1675658409_b5435da7.jpeg"
+          alt=""
+          className="w-full h-full object-cover object-top opacity-[0.035] dark:opacity-[0.045] filter grayscale"
+        />
+      </div>
+
       {/* Left Sidebar Menu */}
       <Sidebar
         activeTab={activeTab}

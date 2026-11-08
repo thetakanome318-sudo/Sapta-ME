@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { UserAccount } from '../types';
 import { Lock, User, ShieldCheck, ArrowRight, KeyRound, AlertCircle, Sparkles, Zap } from 'lucide-react';
 import bgTrafoGrid from '../assets/images/trafo_power_grid_1794098426049.jpg';
+import logoPtSapta from '../assets/images/logo_pt_sapta_manunggal_karya_white.png';
 
 interface LoginViewProps {
   users: UserAccount[];
@@ -54,32 +55,31 @@ export const LoginView: React.FC<LoginViewProps> = ({ users, onLoginSuccess }) =
         <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/40 to-slate-950/60" />
       </div>
 
-      {/* Main Login Card */}
-      <div className="w-full max-w-md bg-slate-900/90 backdrop-blur-md border border-slate-700/60 rounded-2xl shadow-2xl overflow-hidden z-10">
-        {/* Header Branding */}
-        <div className="bg-[#002060] p-6 text-white text-center relative space-y-2 border-b border-blue-900">
-          <div className="w-12 h-12 rounded-xl bg-amber-400 text-slate-950 font-black text-xl flex items-center justify-center mx-auto shadow-md">
-            SMK
-          </div>
-          <div>
-            <h1 className="text-lg font-bold tracking-tight text-white leading-tight">
-              PT SAPTA MANUNGGAL KARYA
-            </h1>
-            <span className="text-xs text-amber-300 font-mono font-semibold block">
+      {/* Main Login Card (Wider & Spacious) */}
+      <div className="w-full max-w-xl sm:max-w-2xl bg-slate-900/90 backdrop-blur-md border border-slate-700/60 rounded-2xl shadow-2xl overflow-hidden z-10 transition-all">
+        {/* Header Branding with Transparent Official Logo */}
+        <div className="bg-slate-900 px-6 sm:px-10 py-6 text-white text-center relative border-b border-slate-800">
+          <div className="flex flex-col items-center justify-center space-y-2.5">
+            <img 
+              src={logoPtSapta} 
+              alt="PT Sapta Manunggal Karya" 
+              className="h-28 sm:h-36 w-auto max-w-[340px] sm:max-w-[420px] object-contain drop-shadow-md mx-auto"
+            />
+            <span className="text-xs sm:text-sm text-amber-300 font-mono font-semibold block tracking-wide">
               Sistem Informasi Monitoring Pekerjaan ME
             </span>
           </div>
         </div>
 
         {/* Form Body */}
-        <div className="p-6 space-y-6">
+        <div className="p-6 sm:p-8 space-y-6">
           <div className="text-center">
-            <h2 className="text-base font-bold text-white">Akses Masuk Pengguna</h2>
-            <p className="text-xs text-slate-400 mt-1">Masukkan nama akun dan kata sandi Anda untuk melanjutkan</p>
+            <h2 className="text-base sm:text-lg font-bold text-white">Akses Masuk Pengguna</h2>
+            <p className="text-xs sm:text-sm text-slate-400 mt-1">Masukkan nama akun dan kata sandi Anda untuk melanjutkan</p>
           </div>
 
           {errorMsg && (
-            <div className="p-3 bg-rose-500/10 border border-rose-500/30 rounded-xl text-rose-400 text-xs flex items-center gap-2">
+            <div className="p-3.5 bg-rose-500/10 border border-rose-500/30 rounded-xl text-rose-400 text-xs sm:text-sm flex items-center gap-2">
               <AlertCircle className="w-4 h-4 shrink-0" />
               <span>{errorMsg}</span>
             </div>
@@ -87,42 +87,42 @@ export const LoginView: React.FC<LoginViewProps> = ({ users, onLoginSuccess }) =
 
           <form onSubmit={handleLoginSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+              <label className="block text-xs sm:text-sm font-semibold text-slate-300 mb-1.5">
                 Nama Akun (Username / Email)
               </label>
               <div className="relative">
-                <User className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
+                <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
                 <input
                   type="text"
                   required
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   placeholder="Masukkan nama akun..."
-                  className="w-full pl-9 pr-4 py-2.5 text-xs bg-slate-950 border border-slate-800 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-3 text-xs sm:text-sm bg-slate-950 border border-slate-800 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition-all"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+              <label className="block text-xs sm:text-sm font-semibold text-slate-300 mb-1.5">
                 Kata Sandi (Password)
               </label>
               <div className="relative">
-                <Lock className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
+                <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
                 <input
                   type="password"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full pl-9 pr-4 py-2.5 text-xs bg-slate-950 border border-slate-800 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-3 text-xs sm:text-sm bg-slate-950 border border-slate-800 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition-all"
                 />
               </div>
             </div>
 
             <button
               type="submit"
-              className="w-full py-3 px-4 bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold rounded-xl text-xs transition-colors flex items-center justify-center gap-2 shadow-lg shadow-amber-400/10"
+              className="w-full py-3.5 px-4 bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold rounded-xl text-xs sm:text-sm transition-colors flex items-center justify-center gap-2 shadow-lg shadow-amber-400/10 cursor-pointer"
             >
               <span>Masuk ke Aplikasi</span>
               <ArrowRight className="w-4 h-4" />
@@ -131,23 +131,23 @@ export const LoginView: React.FC<LoginViewProps> = ({ users, onLoginSuccess }) =
 
           {/* Quick Demo Login Cards */}
           <div className="pt-4 border-t border-slate-800 space-y-3">
-            <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block text-center">
+            <span className="text-[11px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider block text-center">
               Pilih Akun Demo Cepat (1-Klik Login):
             </span>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-3">
               {users.slice(0, 4).map((u) => (
                 <button
                   key={u.id}
                   type="button"
                   onClick={() => handleQuickLogin(u)}
-                  className="p-2.5 bg-slate-950 hover:bg-slate-800 border border-slate-800 rounded-xl text-left transition-all hover:border-amber-400/50 group"
+                  className="p-3 sm:p-3.5 bg-slate-950 hover:bg-slate-800 border border-slate-800 rounded-xl text-left transition-all hover:border-amber-400/50 group cursor-pointer"
                 >
-                  <span className="text-xs font-bold text-white block group-hover:text-amber-400 truncate">
+                  <span className="text-xs sm:text-sm font-bold text-white block group-hover:text-amber-400 truncate">
                     {u.name}
                   </span>
-                  <div className="flex items-center justify-between text-[10px] text-slate-400 mt-1 font-mono">
+                  <div className="flex items-center justify-between text-[10px] sm:text-xs text-slate-400 mt-1.5 font-mono">
                     <span>{u.username}</span>
-                    <span className="text-amber-400/80 font-semibold">{u.role}</span>
+                    <span className="text-amber-400/90 font-semibold">{u.role}</span>
                   </div>
                 </button>
               ))}
@@ -156,7 +156,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ users, onLoginSuccess }) =
         </div>
 
         {/* Footer */}
-        <div className="bg-slate-950 p-3 text-center text-[10px] text-slate-500 border-t border-slate-800">
+        <div className="bg-slate-950 p-3.5 text-center text-[10px] sm:text-xs text-slate-500 border-t border-slate-800">
           PT Sapta Manunggal Karya &copy; 2026. Divisi Mekanikal & Elektrikal.
         </div>
       </div>
