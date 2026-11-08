@@ -39,7 +39,7 @@ export const MandorView: React.FC<MandorViewProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [projectFilter, setProjectFilter] = useState('all');
   const [showInputForm, setShowInputForm] = useState(false);
-  const [activeTab, setActiveTab] = useState<'grid' | 'multi-location'>('grid');
+  const [activeTab, setActiveTab] = useState<'table' | 'grid' | 'multi-location'>('table');
 
   // Form State for Mandor Input
   const [mandorName, setMandorName] = useState('');
@@ -198,27 +198,33 @@ export const MandorView: React.FC<MandorViewProps> = ({
         <div>
           <h2 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
             <HardHat className="w-6 h-6 text-amber-500" />
-            <span>Manajemen Mandor & Multi-Lokasi Pekerjaan</span>
+            <span>Mandor Pekerjaan</span>
           </h2>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-            Kelola data mandor, verifikasi foto KTP, dan pantau mandor yang mengawasi pekerjaan di beberapa lokasi sekaligus.
+            Monitoring Mandor Pekerjaan & Penugasan Multi-Lokasi dengan Manpower.
           </p>
         </div>
 
         <div className="flex items-center gap-3">
           <div className="flex bg-slate-200 dark:bg-slate-800 p-1 rounded-xl text-xs font-semibold">
             <button
+              onClick={() => setActiveTab('table')}
+              className={`px-3 py-1.5 rounded-lg transition-colors ${activeTab === 'table' ? 'bg-amber-400 text-slate-950 font-bold shadow-xs' : 'text-slate-600 dark:text-slate-300'}`}
+            >
+              Tabel Monitoring ({mandors.length})
+            </button>
+            <button
               onClick={() => setActiveTab('grid')}
               className={`px-3 py-1.5 rounded-lg transition-colors ${activeTab === 'grid' ? 'bg-amber-400 text-slate-950 font-bold shadow-xs' : 'text-slate-600 dark:text-slate-300'}`}
             >
-              Semua Mandor ({mandors.length})
+              Grid Card ({mandors.length})
             </button>
             <button
               onClick={() => setActiveTab('multi-location')}
               className={`px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 ${activeTab === 'multi-location' ? 'bg-amber-400 text-slate-950 font-bold shadow-xs' : 'text-slate-600 dark:text-slate-300'}`}
             >
               <Layers className="w-3.5 h-3.5" />
-              <span>Monitoring Multi-Lokasi ({multiLocationMandors.length})</span>
+              <span>Multi-Lokasi ({multiLocationMandors.length})</span>
             </button>
           </div>
 
@@ -556,7 +562,136 @@ export const MandorView: React.FC<MandorViewProps> = ({
         </div>
       </div>
 
-      {/* TAB CONTENT 1: GRID VIEW SEMUA MANDOR */}
+      {/* TAB CONTENT 1: TABEL MONITORING MANDOR PEKERJAAN (Sesuai Foto Attachment User) */}
+      {activeTab === 'table' && (
+        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden">
+          <div className="p-4 bg-slate-900 text-amber-400 flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800">
+            <div className="flex items-center gap-2 font-mono font-bold text-sm">
+              <HardHat className="w-4 h-4 text-amber-500" />
+              <span>TABEL MONITORING MANDOR PEKERJAAN</span>
+            </div>
+            <div className="flex items-center gap-3 text-xs text-slate-400 font-mono">
+              <span className="bg-amber-400/10 text-amber-400 px-2 py-0.5 rounded border border-amber-400/20">
+                1 Mandor Multi-Lokasi & Manpower
+              </span>
+              <span>Total: {filteredMandors.length} Mandor</span>
+            </div>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs border-collapse">
+              <thead className="bg-slate-950 text-slate-300 font-mono text-[11px] uppercase border-b border-slate-800">
+                <tr>
+                  <th className="px-4 py-3 border-r border-slate-800 text-center w-12 font-bold text-amber-400">NO</th>
+                  <th className="px-4 py-3 border-r border-slate-800 font-bold text-amber-400">Mandor</th>
+                  <th className="px-4 py-3 border-r border-slate-800 font-bold text-amber-400">Lokasi</th>
+                  <th className="px-4 py-3 border-r border-slate-800 font-bold text-amber-400">Manpower</th>
+                  <th className="px-4 py-3 border-r border-slate-800 font-bold text-amber-400">Lokasi</th>
+                  <th className="px-4 py-3 border-r border-slate-800 font-bold text-amber-400">Manpower</th>
+                  <th className="px-4 py-3 border-r border-slate-800 text-center font-bold text-amber-400">Foto KTP</th>
+                  <th className="px-4 py-3 border-r border-slate-800 text-center font-bold text-amber-400">Status</th>
+                  <th className="px-4 py-3 text-right font-bold text-amber-400">Aksi</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-200 dark:divide-slate-800 text-slate-800 dark:text-slate-200">
+                {filteredMandors.length === 0 ? (
+                  <tr>
+                    <td colSpan={9} className="text-center py-10 text-slate-500 font-mono">
+                      Tidak ada data mandor pekerjaan yang sesuai.
+                    </td>
+                  </tr>
+                ) : (
+                  filteredMandors.map((m, idx) => {
+                    const loc1 = m.locations && m.locations.length > 0 ? m.locations[0].locationName : m.workLocation;
+                    const loc2 = m.locations && m.locations.length > 1 ? m.locations[1].locationName : '-';
+                    const mpCount1 = m.workerCount > 0 ? `${m.workerCount} Teknisi` : '0 Orang';
+                    const mpCount2 = m.locations && m.locations.length > 1 ? 'Tim Subkon' : '-';
+
+                    return (
+                      <tr key={m.id} className="hover:bg-amber-500/5 dark:hover:bg-slate-800/50 transition-colors">
+                        <td className="px-4 py-3 border-r border-slate-200 dark:border-slate-800 text-center font-mono font-bold text-amber-500 text-sm">
+                          {idx + 1}
+                        </td>
+                        <td className="px-4 py-3 border-r border-slate-200 dark:border-slate-800">
+                          <div className="font-bold text-slate-900 dark:text-white text-sm">{m.name}</div>
+                          <div className="text-[11px] text-slate-500 font-mono">{m.phone}</div>
+                          <div className="text-[10px] text-amber-600 dark:text-amber-400 font-semibold">{m.subcontractorTeam}</div>
+                        </td>
+                        <td className="px-4 py-3 border-r border-slate-200 dark:border-slate-800 font-medium">
+                          <div className="flex items-center gap-1.5 text-slate-900 dark:text-slate-100 font-bold">
+                            <MapPin className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                            <span>{loc1}</span>
+                          </div>
+                          <div className="text-[10px] text-slate-500 mt-0.5 truncate max-w-[180px]">{m.projectName}</div>
+                        </td>
+                        <td className="px-4 py-3 border-r border-slate-200 dark:border-slate-800">
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-amber-500/10 text-amber-700 dark:text-amber-400 text-xs font-bold font-mono border border-amber-500/30">
+                            <Users className="w-3.5 h-3.5 text-amber-500" />
+                            {mpCount1}
+                          </span>
+                          {m.manpowerList && m.manpowerList.length > 0 && (
+                            <div className="text-[10px] text-slate-500 mt-1 truncate max-w-[150px]" title={m.manpowerList.map(p => p.name).join(', ')}>
+                              {m.manpowerList.map(p => p.name).join(', ')}
+                            </div>
+                          )}
+                        </td>
+                        <td className="px-4 py-3 border-r border-slate-200 dark:border-slate-800 font-medium">
+                          {loc2 !== '-' ? (
+                            <div className="flex items-center gap-1.5 text-slate-900 dark:text-slate-100 font-bold">
+                              <MapPin className="w-3.5 h-3.5 text-blue-500 shrink-0" />
+                              <span>{loc2}</span>
+                            </div>
+                          ) : (
+                            <span className="text-slate-400 italic">-</span>
+                          )}
+                        </td>
+                        <td className="px-4 py-3 border-r border-slate-200 dark:border-slate-800">
+                          {loc2 !== '-' ? (
+                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-blue-500/10 text-blue-600 dark:text-blue-400 text-xs font-bold font-mono border border-blue-500/30">
+                              <Users className="w-3.5 h-3.5 text-blue-500" />
+                              {mpCount2}
+                            </span>
+                          ) : (
+                            <span className="text-slate-400 italic">-</span>
+                          )}
+                        </td>
+                        <td className="px-4 py-3 border-r border-slate-200 dark:border-slate-800 text-center">
+                          <button
+                            onClick={() => setPreviewKtpUrl(m.ktpPhotoUrl || 'https://images.unsplash.com/photo-1544717305-2782549b5136?w=400&auto=format&fit=crop&q=80')}
+                            className="inline-flex items-center gap-1 px-2.5 py-1 bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 dark:text-amber-400 rounded-lg text-xs font-bold border border-amber-500/30 transition-colors"
+                            title="Lihat Foto KTP Mandor"
+                          >
+                            <IdCard className="w-3.5 h-3.5" />
+                            <span>Lihat KTP</span>
+                          </button>
+                        </td>
+                        <td className="px-4 py-3 border-r border-slate-200 dark:border-slate-800 text-center">
+                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                            {m.status}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-right">
+                          <button
+                            onClick={() => {
+                              setEditingMandor(m);
+                              setEditLocationInput(m.workLocation);
+                            }}
+                            className="px-2.5 py-1 text-xs font-bold text-amber-600 dark:text-amber-400 bg-slate-100 dark:bg-slate-800 hover:bg-amber-400 hover:text-slate-950 rounded-lg transition-colors border border-slate-200 dark:border-slate-700"
+                          >
+                            + Lokasi
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* TAB CONTENT 2: GRID VIEW SEMUA MANDOR */}
       {activeTab === 'grid' && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {filteredMandors.map((mandor) => (

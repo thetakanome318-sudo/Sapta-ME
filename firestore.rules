@@ -3,19 +3,50 @@ service cloud.firestore {
   match /databases/{database}/documents {
     
     // Helpers
-    function isSignedIn() { return request.auth != null; }
-    function isValidId(id) { return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); }
-    
-    match /projects/{projectId} {
-      allow read: if isSignedIn();
-      allow write: if false; // Read-only for now
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
     }
-    
-    match /materials/{materialId} {
-      allow read: if isSignedIn();
-      allow create, update: if isSignedIn(); 
+
+    match /spbjContracts/{spbjId} {
+      allow read, write: if isValidId(spbjId);
     }
-    
+
+    match /boqItems/{boqId} {
+      allow read, write: if isValidId(boqId);
+    }
+
+    match /mandors/{mandorId} {
+      allow read, write: if isValidId(mandorId);
+    }
+
+    match /companyVehicles/{vehicleId} {
+      allow read, write: if isValidId(vehicleId);
+    }
+
+    match /leaseVehicles/{leaseId} {
+      allow read, write: if isValidId(leaseId);
+    }
+
+    match /emergencyWorks/{emergencyId} {
+      allow read, write: if isValidId(emergencyId);
+    }
+
+    match /bopItems/{bopId} {
+      allow read, write: if isValidId(bopId);
+    }
+
+    match /materialBongkar/{bongkarId} {
+      allow read, write: if isValidId(bongkarId);
+    }
+
+    match /users/{userId} {
+      allow read, write: if isValidId(userId);
+    }
+
+    match /test/{docId} {
+      allow read, write: if true;
+    }
+
     match /{document=**} {
       allow read, write: if false;
     }

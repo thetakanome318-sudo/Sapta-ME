@@ -23,8 +23,11 @@ export const Header: React.FC<HeaderProps> = ({
       case 'attendance': return 'Pekerja & Absensi';
       case 'spbj': return 'Daftar SPBJ';
       case 'boq': return 'Bill of Quantities (BOQ) & RAB Pekerjaan';
-      case 'mandor': return 'Mandor & Lokasi Pekerjaan';
+      case 'presentation': return 'Mode Presentasi & Slide Eksekutif';
+      case 'whatsapp-report': return 'Pelaporan Pekerjaan via WhatsApp';
+      case 'mandor': return 'Mandor Pekerjaan & Monitoring Lokasi';
       case 'monitoring-pekerjaan': return 'Monitoring Progres & Pekerjaan';
+      case 'emergency-work': return 'Pekerjaan Emergency & Fast Response ME';
       case 'monitoring-realisasi': return 'Realisasi Pekerjaan & Progres Fisik';
       case 'monitoring-tagging': return 'Tagging Lokasi Proyek & Aset';
       case 'monitoring-timeline': return 'Timeline & Jadwal Pelaksanaan';
@@ -33,7 +36,10 @@ export const Header: React.FC<HeaderProps> = ({
       case 'monitoring-mdu': return 'Monitoring Material MDU';
       case 'monitoring-nonmdu': return 'Monitoring Material NON MDU';
       case 'monitoring-bongkar': return 'Monitoring Material Bongkar & Eksisting';
+      case 'vehicle-company': return 'Kendaraan Operasional Perusahaan';
+      case 'vehicle-lease': return 'Kontrak Sewa Kendaraan Operasional';
       case 'logistics-labor': return 'Biaya Angkutan & Buruh Lapangan';
+      case 'bop': return 'Biaya Operasional Proyek (BOP Lapangan)';
       case 'warehouse': return 'Manajemen Gudang & Stok Pusat';
       case 'warehouse-ambon': return 'Manajemen Gudang Ambon';
       case 'warehouse-tual': return 'Manajemen Gudang Tual';
@@ -57,9 +63,6 @@ export const Header: React.FC<HeaderProps> = ({
           </button>
 
           <div>
-            <span className="text-[10px] font-mono font-semibold text-amber-600 dark:text-amber-400 uppercase tracking-wider block">
-              PT Sapta Manunggal Karya · Divisi ME
-            </span>
             <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white truncate">
               {getTabTitle(activeTab)}
             </h2>
@@ -67,27 +70,9 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
 
         <div className="flex items-center gap-3">
-          {currentUser && (
-            <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 pl-3 pr-2 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700">
-              <div className="flex flex-col text-right">
-                <span className="text-xs font-bold text-slate-900 dark:text-white leading-tight">
-                  {currentUser.name}
-                </span>
-                <span className="text-[10px] font-mono font-bold text-amber-600 dark:text-amber-400">
-                  {currentUser.role}
-                </span>
-              </div>
-              {onLogout && (
-                <button
-                  onClick={onLogout}
-                  className="p-1.5 text-slate-400 hover:text-rose-500 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors"
-                  title="Keluar / Logout"
-                >
-                  <LogOut className="w-4 h-4" />
-                </button>
-              )}
-            </div>
-          )}
+          <span className="text-xs font-mono font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider bg-amber-500/10 dark:bg-amber-400/10 px-3 py-1.5 rounded-xl border border-amber-500/20 dark:border-amber-400/20">
+            PT Sapta Manunggal Karya · Divisi ME
+          </span>
         </div>
       </div>
     </header>

@@ -11,9 +11,37 @@ import {
   INITIAL_NON_MDU_MATERIALS,
   INITIAL_USERS,
   INITIAL_BOQ_ITEMS,
-  INITIAL_MATERIAL_BONGKAR
+  INITIAL_MATERIAL_BONGKAR,
+  INITIAL_VEHICLE_COMPANY,
+  INITIAL_VEHICLE_LEASE,
+  INITIAL_EMERGENCY_WORKS,
+  INITIAL_BOP_ITEMS
 } from './data/mockData';
-import { Project, Worker, TaskAssignment, Equipment, AttendanceRecord, Mandor, SpbjContract, MaterialSummaryItem, UserAccount, BoqItem, MaterialBongkarItem } from './types';
+import { Project, Worker, TaskAssignment, Equipment, AttendanceRecord, Mandor, SpbjContract, MaterialSummaryItem, UserAccount, BoqItem, MaterialBongkarItem, VehicleCompany, VehicleLease, EmergencyWork, BopItem } from './types';
+import { testFirestoreConnection } from './firebase';
+import {
+  subscribeSpbjContracts,
+  upsertSpbjContract,
+  subscribeBoqItems,
+  upsertBoqItem,
+  deleteBoqItem,
+  subscribeMandors,
+  upsertMandor,
+  subscribeCompanyVehicles,
+  upsertCompanyVehicle,
+  subscribeLeaseVehicles,
+  upsertLeaseVehicle,
+  subscribeEmergencyWorks,
+  upsertEmergencyWork,
+  subscribeBopItems,
+  upsertBopItem,
+  subscribeMaterialBongkar,
+  upsertMaterialBongkar,
+  deleteMaterialBongkar,
+  subscribeUsers,
+  upsertUser,
+  deleteUser
+} from './services/firestoreSync';
 
 import { Sidebar } from './components/Sidebar';
 import { Header } from './components/Header';
@@ -23,8 +51,11 @@ import { EquipmentView } from './components/EquipmentView';
 import { MandorView } from './components/MandorView';
 import { SpbjView } from './components/SpbjView';
 import { BoqView } from './components/BoqView';
+import { PresentationView } from './components/PresentationView';
+import { WhatsAppReportView } from './components/WhatsAppReportView';
 import { MasterDataView } from './components/MasterDataView';
 import { WorkMonitoringView } from './components/WorkMonitoringView';
+import { EmergencyWorkView } from './components/EmergencyWorkView';
 import { WorkRealizationView } from './components/WorkRealizationView';
 import { LocationTaggingView } from './components/LocationTaggingView';
 import { WorkTimelineView } from './components/WorkTimelineView';
@@ -33,7 +64,10 @@ import { PpeMonitoringView } from './components/PpeMonitoringView';
 import { MduMonitoringView } from './components/MduMonitoringView';
 import { NonMduMonitoringView } from './components/NonMduMonitoringView';
 import { MaterialBongkarView } from './components/MaterialBongkarView';
+import { VehicleCompanyView } from './components/VehicleCompanyView';
+import { VehicleLeaseView } from './components/VehicleLeaseView';
 import { LogisticsLaborCostView } from './components/LogisticsLaborCostView';
+import { BopView } from './components/BopView';
 import { WarehouseView } from './components/WarehouseView';
 import { WarehouseAmbonView } from './components/WarehouseAmbonView';
 import { WarehouseTualView } from './components/WarehouseTualView';
@@ -63,6 +97,10 @@ export default function App() {
   const [nonMduMaterials, setNonMduMaterials] = useState<MaterialSummaryItem[]>(INITIAL_NON_MDU_MATERIALS);
   const [boqItems, setBoqItems] = useState<BoqItem[]>(INITIAL_BOQ_ITEMS);
   const [materialBongkarItems, setMaterialBongkarItems] = useState<MaterialBongkarItem[]>(INITIAL_MATERIAL_BONGKAR);
+  const [companyVehicles, setCompanyVehicles] = useState<VehicleCompany[]>(INITIAL_VEHICLE_COMPANY);
+  const [leaseVehicles, setLeaseVehicles] = useState<VehicleLease[]>(INITIAL_VEHICLE_LEASE);
+  const [emergencyWorks, setEmergencyWorks] = useState<EmergencyWork[]>(INITIAL_EMERGENCY_WORKS);
+  const [bopItems, setBopItems] = useState<BopItem[]>(INITIAL_BOP_ITEMS);
 
   // Modals State
   const [selectedWorkerForModal, setSelectedWorkerForModal] = useState<Worker | null>(null);
@@ -77,35 +115,172 @@ export default function App() {
     }
   }, [darkMode]);
 
-  // User Actions
+  // Real-time Firestore Cloud Sync across all devices (Desktop, Mobile, etc.)
+  useEffect(() => {
+    // 1. Initial connection verification
+    testFirestoreConnection();
+
+    // 2. Real-time subscriptions
+    const unsubSpbj = subscribeSpbjContracts((data) => {
+      if (data && data.length > 0) setSpbjContracts(data);
+    });
+
+    const unsubBoq = subscribeBoqItems((data) => {
+      if (data && data.length > 0) setBoqItems(data);
+    });
+
+    const unsubMandor = subscribeMandors((data) => {
+      if (data && data.length > 0) setMandors(data);
+    });
+
+    const unsubCompanyVehicles = subscribeCompanyVehicles((data) => {
+      if (data && data.length > 0) setCompanyVehicles(data);
+    });
+
+    const unsubLeaseVehicles = subscribeLeaseVehicles((data) => {
+      if (data && data.length > 0) setLeaseVehicles(data);
+    });
+
+    const unsubEmergency = subscribeEmergencyWorks((data) => {
+      if (data && data.length > 0) setEmergencyWorks(data);
+    });
+
+    const unsubBop = subscribeBopItems((data) => {
+      if (data && data.length > 0) setBopItems(data);
+    });
+
+    const unsubBongkar = subscribeMaterialBongkar((data) => {
+      if (data && data.length > 0) setMaterialBongkarItems(data);
+    });
+
+    const unsubUsers = subscribeUsers((data) => {
+      if (data && data.length > 0) setUsers(data);
+    });
+
+    return () => {
+      unsubSpbj();
+      unsubBoq();
+      unsubMandor();
+      unsubCompanyVehicles();
+      unsubLeaseVehicles();
+      unsubEmergency();
+      unsubBop();
+      unsubBongkar();
+      unsubUsers();
+    };
+  }, []);
+
+  // User Actions (Cloud Synchronized)
   const handleAddUser = (newUser: UserAccount) => {
     setUsers([newUser, ...users]);
+    upsertUser(newUser);
   };
 
   const handleDeleteUser = (id: string) => {
     setUsers(users.filter((u) => u.id !== id));
+    deleteUser(id);
   };
 
-  // BOQ Actions
+  // BOQ Actions (Cloud Synchronized)
   const handleAddBoqItem = (newItem: BoqItem) => {
     setBoqItems([newItem, ...boqItems]);
+    upsertBoqItem(newItem);
   };
 
   const handleUpdateBoqItem = (updatedItem: BoqItem) => {
     setBoqItems(boqItems.map((i) => (i.id === updatedItem.id ? updatedItem : i)));
+    upsertBoqItem(updatedItem);
   };
 
   const handleDeleteBoqItem = (id: string) => {
     setBoqItems(boqItems.filter((i) => i.id !== id));
+    deleteBoqItem(id);
   };
 
-  // Material Bongkar Actions
+  // Material Bongkar Actions (Cloud Synchronized)
   const handleAddMaterialBongkar = (newItem: MaterialBongkarItem) => {
     setMaterialBongkarItems([newItem, ...materialBongkarItems]);
+    upsertMaterialBongkar(newItem);
   };
 
   const handleDeleteMaterialBongkar = (id: string) => {
     setMaterialBongkarItems(materialBongkarItems.filter((i) => i.id !== id));
+    deleteMaterialBongkar(id);
+  };
+
+  // Vehicle Actions (Cloud Synchronized)
+  const handleAddCompanyVehicle = (newVehicle: Omit<VehicleCompany, 'id'>) => {
+    const item: VehicleCompany = {
+      ...newVehicle,
+      id: `VHC-${String(companyVehicles.length + 1).padStart(3, '0')}`,
+    };
+    setCompanyVehicles([item, ...companyVehicles]);
+    upsertCompanyVehicle(item);
+  };
+
+  const handleUpdateCompanyVehicleStatus = (id: string, status: VehicleCompany['status']) => {
+    const target = companyVehicles.find((v) => v.id === id);
+    if (target) {
+      const updated = { ...target, status };
+      setCompanyVehicles(companyVehicles.map((v) => (v.id === id ? updated : v)));
+      upsertCompanyVehicle(updated);
+    }
+  };
+
+  const handleAddLeaseVehicle = (newLease: Omit<VehicleLease, 'id'>) => {
+    const item: VehicleLease = {
+      ...newLease,
+      id: `LS-${String(leaseVehicles.length + 1).padStart(3, '0')}`,
+    };
+    setLeaseVehicles([item, ...leaseVehicles]);
+    upsertLeaseVehicle(item);
+  };
+
+  const handleUpdateLeaseVehicleStatus = (id: string, status: VehicleLease['status']) => {
+    const target = leaseVehicles.find((l) => l.id === id);
+    if (target) {
+      const updated = { ...target, status };
+      setLeaseVehicles(leaseVehicles.map((l) => (l.id === id ? updated : l)));
+      upsertLeaseVehicle(updated);
+    }
+  };
+
+  // Emergency Work Actions (Cloud Synchronized)
+  const handleAddEmergencyWork = (newWork: Omit<EmergencyWork, 'id'>) => {
+    const item: EmergencyWork = {
+      ...newWork,
+      id: `EMG-${String(emergencyWorks.length + 1).padStart(3, '0')}`,
+    };
+    setEmergencyWorks([item, ...emergencyWorks]);
+    upsertEmergencyWork(item);
+  };
+
+  const handleUpdateEmergencyWorkStatus = (id: string, status: EmergencyWork['status']) => {
+    const target = emergencyWorks.find((e) => e.id === id);
+    if (target) {
+      const updated = { ...target, status };
+      setEmergencyWorks(emergencyWorks.map((e) => (e.id === id ? updated : e)));
+      upsertEmergencyWork(updated);
+    }
+  };
+
+  // BOP Actions (Cloud Synchronized)
+  const handleAddBopItem = (newItem: Omit<BopItem, 'id'>) => {
+    const item: BopItem = {
+      ...newItem,
+      id: `BOP-${String(bopItems.length + 1).padStart(3, '0')}`,
+    };
+    setBopItems([item, ...bopItems]);
+    upsertBopItem(item);
+  };
+
+  const handleUpdateBopStatus = (id: string, status: BopItem['status']) => {
+    const target = bopItems.find((b) => b.id === id);
+    if (target) {
+      const updated = { ...target, status };
+      setBopItems(bopItems.map((b) => (b.id === id ? updated : b)));
+      upsertBopItem(updated);
+    }
   };
 
   // Actions
@@ -119,6 +294,7 @@ export default function App() {
 
   const handleAddSpbj = (newSpbj: SpbjContract) => {
     setSpbjContracts([newSpbj, ...spbjContracts]);
+    upsertSpbjContract(newSpbj);
   };
 
   const handleUpdateSpbjEndDate = (
@@ -126,27 +302,30 @@ export default function App() {
     newEndDate: string,
     newStatus?: SpbjContract['status']
   ) => {
-    setSpbjContracts(
-      spbjContracts.map((s) =>
-        s.id === spbjId
-          ? {
-              ...s,
-              contractEndDate: newEndDate,
-              status: newStatus || s.status,
-            }
-          : s
-      )
-    );
+    const target = spbjContracts.find((s) => s.id === spbjId);
+    if (target) {
+      const updated: SpbjContract = {
+        ...target,
+        contractEndDate: newEndDate,
+        status: newStatus || target.status,
+      };
+      setSpbjContracts(spbjContracts.map((s) => (s.id === spbjId ? updated : s)));
+      upsertSpbjContract(updated);
+    }
   };
 
   const handleAddMandor = (newMandor: Mandor) => {
     setMandors([newMandor, ...mandors]);
+    upsertMandor(newMandor);
   };
 
   const handleUpdateMandorLocation = (mandorId: string, newLocation: string) => {
-    setMandors(
-      mandors.map((m) => (m.id === mandorId ? { ...m, workLocation: newLocation } : m))
-    );
+    const target = mandors.find((m) => m.id === mandorId);
+    if (target) {
+      const updated: Mandor = { ...target, workLocation: newLocation };
+      setMandors(mandors.map((m) => (m.id === mandorId ? updated : m)));
+      upsertMandor(updated);
+    }
   };
 
   const handleAddTask = (newTask: TaskAssignment) => {
@@ -208,6 +387,8 @@ export default function App() {
         totalWorkersOnSite={totalWorkersOnSite}
         sidebarOpen={sidebarOpen}
         setSidebarOpen={setSidebarOpen}
+        currentUser={currentUser}
+        onLogout={() => setCurrentUser(null)}
       />
 
       {/* Main Content Area */}
@@ -250,6 +431,29 @@ export default function App() {
             />
           )}
 
+          {activeTab === 'presentation' && (
+            <PresentationView
+              spbjList={spbjContracts}
+              tasks={tasks}
+              boqItems={boqItems}
+              mandors={mandors}
+              mduMaterials={mduMaterials}
+              nonMduMaterials={nonMduMaterials}
+              bongkarMaterials={materialBongkarItems}
+            />
+          )}
+
+          {activeTab === 'whatsapp-report' && (
+            <WhatsAppReportView
+              spbjList={spbjContracts}
+              tasks={tasks}
+              mandors={mandors}
+              workers={workers}
+              boqItems={boqItems}
+              mduMaterials={mduMaterials}
+            />
+          )}
+
           {activeTab === 'mandor' && (
             <MandorView
               mandors={mandors}
@@ -266,6 +470,16 @@ export default function App() {
               projects={projects}
               workers={workers}
               onUpdateTaskStatus={handleUpdateTaskStatus}
+            />
+          )}
+
+          {activeTab === 'emergency-work' && (
+            <EmergencyWorkView
+              emergencyWorks={emergencyWorks}
+              spbjList={spbjContracts}
+              mandors={mandors}
+              onAddEmergencyWork={handleAddEmergencyWork}
+              onUpdateStatus={handleUpdateEmergencyWorkStatus}
             />
           )}
 
@@ -314,8 +528,35 @@ export default function App() {
             />
           )}
 
+          {activeTab === 'vehicle-company' && (
+            <VehicleCompanyView
+              vehicles={companyVehicles}
+              spbjContracts={spbjContracts}
+              onAddVehicle={handleAddCompanyVehicle}
+              onUpdateVehicleStatus={handleUpdateCompanyVehicleStatus}
+            />
+          )}
+
+          {activeTab === 'vehicle-lease' && (
+            <VehicleLeaseView
+              leases={leaseVehicles}
+              spbjContracts={spbjContracts}
+              onAddLease={handleAddLeaseVehicle}
+              onUpdateLeaseStatus={handleUpdateLeaseVehicleStatus}
+            />
+          )}
+
           {activeTab === 'logistics-labor' && (
             <LogisticsLaborCostView />
+          )}
+
+          {activeTab === 'bop' && (
+            <BopView
+              bopItems={bopItems}
+              spbjList={spbjContracts}
+              onAddBopItem={handleAddBopItem}
+              onUpdateBopStatus={handleUpdateBopStatus}
+            />
           )}
 
           {activeTab === 'warehouse' && (

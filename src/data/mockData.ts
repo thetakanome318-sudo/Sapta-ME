@@ -1,4 +1,4 @@
-import { Worker, Project, TaskAssignment, Equipment, AttendanceRecord, Mandor, SpbjContract, MaterialSummaryItem, UserAccount, BoqItem, MaterialBongkarItem } from '../types';
+import { Worker, Project, TaskAssignment, Equipment, AttendanceRecord, Mandor, SpbjContract, MaterialSummaryItem, UserAccount, BoqItem, MaterialBongkarItem, VehicleCompany, VehicleLease, EmergencyWork, BopItem } from '../types';
 
 export const INITIAL_SPBJ_CONTRACTS: SpbjContract[] = [
   {
@@ -707,5 +707,233 @@ export const INITIAL_MATERIAL_BONGKAR: MaterialBongkarItem[] = [
     notes: 'Trafo eksisting terbakar diganti unit baru 50 kVA',
   },
 ];
+
+export const INITIAL_VEHICLE_COMPANY: VehicleCompany[] = [
+  {
+    id: 'VHC-001',
+    plateNumber: 'DE 8192 AC',
+    vehicleName: 'Toyota Hilux Double Cabin 4x4',
+    type: 'Pick-up 4x4 Operasional Site',
+    driverName: 'Yohanes Tanate',
+    status: 'Aktif Operasional',
+    lastServiceDate: '2026-08-10',
+    nextTaxDate: '2027-03-15',
+    spbjId: 'SPBJ-001',
+    notes: 'Unit tangguh untuk survey lokasi & membawa tim Lisdes Tamangil'
+  },
+  {
+    id: 'VHC-002',
+    plateNumber: 'DE 1042 AB',
+    vehicleName: 'Mitsubishi Fuso Canter Heavy Crane 6.5T',
+    type: 'Truk Crane 6.5 Ton',
+    driverName: 'Bambang Sucipto',
+    status: 'Aktif Operasional',
+    lastServiceDate: '2026-09-01',
+    nextTaxDate: '2027-06-20',
+    spbjId: 'SPBJ-001',
+    notes: 'Mobilisasi & pendirian tiang besi 12m 200 daN UP3 Tual'
+  },
+  {
+    id: 'VHC-003',
+    plateNumber: 'DE 7721 KK',
+    vehicleName: 'Toyota Avanza 1.5 G',
+    type: 'Mobil Dinas PM / Supervisor',
+    driverName: 'Budi Santoso',
+    status: 'Aktif Operasional',
+    lastServiceDate: '2026-07-15',
+    nextTaxDate: '2026-11-30',
+    spbjId: 'SPBJ-002',
+    notes: 'Inspeksi & koordinasi direksi lapangan PLN UP3 Tual'
+  },
+  {
+    id: 'VHC-004',
+    plateNumber: 'DE 5520 TT',
+    vehicleName: 'Isuzu Elf Long Box Material',
+    type: 'Truk Box Transport Material',
+    driverName: 'Ahmad Fauzi',
+    status: 'Servis / Bengkel',
+    lastServiceDate: '2026-10-02',
+    nextTaxDate: '2027-01-10',
+    spbjId: 'SPBJ-003',
+    notes: 'Perbaikan sistem rem & rem ganti oli di Bengkel Resmi Ambon'
+  }
+];
+
+export const INITIAL_VEHICLE_LEASE: VehicleLease[] = [
+  {
+    id: 'LS-001',
+    contractNumber: 'CTR-ME-2026-081',
+    vendorName: 'PT Trans Maluku Utama',
+    plateNumber: 'DE 9102 XY',
+    vehicleType: 'Mitsubishi Triton Double Cabin 4x4',
+    monthlyRate: 18500000,
+    startDate: '2026-08-01',
+    endDate: '2026-12-31',
+    status: 'Aktif',
+    assignedSite: 'Desa Tamangil & Hoko - UP3 Tual',
+    spbjId: 'SPBJ-001',
+    notes: 'Kontrak sewa bulanan termasuk asuransi & maintenance rutin vendor'
+  },
+  {
+    id: 'LS-002',
+    contractNumber: 'CTR-ME-2026-094',
+    vendorName: 'CV Seram Rent Car',
+    plateNumber: 'DE 3381 KL',
+    vehicleType: 'Toyota Hilux Single Cabin Cargo',
+    monthlyRate: 14000000,
+    startDate: '2026-09-01',
+    endDate: '2026-11-30',
+    status: 'Mendekati Expired',
+    assignedSite: 'Desa Ngurko - UP3 Tual',
+    spbjId: 'SPBJ-003',
+    notes: 'Digunakan untuk distribusi isolator & aksesoris JTM'
+  },
+  {
+    id: 'LS-003',
+    contractNumber: 'CTR-ME-2026-102',
+    vendorName: 'PT Maluku Mobilindo',
+    plateNumber: 'B 9481 SDA',
+    vehicleType: 'Hino Dutro Drop Side 130 HD',
+    monthlyRate: 24500000,
+    startDate: '2026-08-15',
+    endDate: '2027-02-15',
+    status: 'Aktif',
+    assignedSite: 'Ds Letvuan & Kolser - UP3 Tual',
+    spbjId: 'SPBJ-004',
+    notes: 'Sewa truk Bak Terbuka pengangkut kabel A3CS drum 39km'
+  }
+];
+
+export const INITIAL_EMERGENCY_WORKS: EmergencyWork[] = [
+  {
+    id: 'EMG-001',
+    ticketNumber: 'EMG/ME/2026/11-001',
+    locationName: 'Feeder Gardu Hub 20kV Tamangil - UP3 Tual',
+    spbjId: 'SPBJ-001',
+    severity: 'Kritis / Blackout',
+    description: 'Kabel JTM 20kV putus tertimpa pohon akibat cuaca buruk. Diperlukan terminasi ulang & penggantian 2 set isolator tumpu.',
+    mandorName: 'Bapak Karmin Suhartono',
+    teamCount: 6,
+    reportedTime: '2026-11-07 06:30 WIB',
+    targetResponseTime: '2 Jam (SLA Emergency)',
+    actionTaken: 'Tim K3 & penarik kabel meluncur dengan Mobil 4x4, terminasi ulang jointing 20kV & pemasangan arrester baru.',
+    status: 'Dalam Penanganan (On-Site)',
+    reportedBy: 'Dispatched by PLN UP3 Tual Call Center',
+    notes: 'Prioritas utama agar suplai listrik Desa Tamangil kembali pulih.'
+  },
+  {
+    id: 'EMG-002',
+    ticketNumber: 'EMG/ME/2026/11-002',
+    locationName: 'Trafo Distribusi 50kVA Desa Hoko',
+    spbjId: 'SPBJ-002',
+    severity: 'Tinggi / Trip Breaker',
+    description: 'Fuse Cut Out (FCO) meledak akibat lonjakan beban petir. Perlunya penanganan cepat ganti fuse link 15A & trafo megger test.',
+    mandorName: 'Bapak Wawan Kurnia',
+    teamCount: 4,
+    reportedTime: '2026-11-06 14:15 WIB',
+    targetResponseTime: '4 Jam',
+    actionTaken: 'Penggantian 3 bh Fuse Cut Out & Uji tahanan isolasi trafo 50kVA dengan Megger 5kV. Sistem sudah kembali penormalan.',
+    status: 'Selesai / Normal',
+    reportedBy: 'Supervisor PLN UP3 Tual',
+    notes: 'Pekerjaan telah rampung dan berita acara penormalan sudah ditandatangani.'
+  },
+  {
+    id: 'EMG-003',
+    ticketNumber: 'EMG/ME/2026/11-003',
+    locationName: 'Jaringan JTR Desa Ngurko',
+    spbjId: 'SPBJ-003',
+    severity: 'Sedang',
+    description: 'Kabel Twisted NFA2X 3x70+1x50mm² kendur tersangkut tiang eksisting.',
+    mandorName: 'Bapak Zaenal Arifin',
+    teamCount: 3,
+    reportedTime: '2026-11-07 09:00 WIB',
+    targetResponseTime: '6 Jam',
+    actionTaken: 'Penyetelan andongan kabel JTR & penambahan pole bracket.',
+    status: 'Menunggu Sparepart',
+    reportedBy: 'Petugas Lapangan SMK',
+    notes: 'Menunggu tambahan klem suspension dari Gudang Tual.'
+  }
+];
+
+export const INITIAL_BOP_ITEMS: BopItem[] = [
+  {
+    id: 'BOP-001',
+    voucherNumber: 'BOP/ME/2026/08-012',
+    category: 'Konsumsi & Makan Tim',
+    spbjId: 'SPBJ-001',
+    projectName: 'PEMBANGUNAN DAN PEMASANGAN JARINGAN DISTRIBUSI LISDES - Desa Tamangil',
+    description: 'Biaya konsumsi & uang makan 8 teknisi penarikan JTM Desa Tamangil (7 Hari)',
+    amount: 3850000,
+    date: '2026-08-25',
+    submittedBy: 'Bapak Karmin Suhartono (Mandor)',
+    approvedBy: 'Budi Santoso (Project Manager)',
+    status: 'Disetujui',
+    receiptPhotoUrl: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=400&auto=format&fit=crop&q=80',
+    notes: 'Kuitansi & rekap presensi tim terlampir.'
+  },
+  {
+    id: 'BOP-002',
+    voucherNumber: 'BOP/ME/2026/09-004',
+    category: 'BBM & Tol Kendaraan',
+    spbjId: 'SPBJ-001',
+    projectName: 'PEMBANGUNAN DAN PEMASANGAN JARINGAN DISTRIBUSI LISDES - Desa Tamangil',
+    description: 'Pembelian Solar Dex Truk Crane & Pertamax Hilux 4x4 Survey Site Tual',
+    amount: 2450000,
+    date: '2026-09-02',
+    submittedBy: 'Yohanes Tanate (Driver Hilux)',
+    approvedBy: 'Budi Santoso (Project Manager)',
+    status: 'Disetujui',
+    receiptPhotoUrl: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=400&auto=format&fit=crop&q=80',
+    notes: 'Struk SPBU Tual lengkap.'
+  },
+  {
+    id: 'BOP-003',
+    voucherNumber: 'BOP/ME/2026/09-019',
+    category: 'Sewa Mess & Akomodasi',
+    spbjId: 'SPBJ-002',
+    projectName: 'PEMBANGUNAN DAN PEMASANGAN JARINGAN DISTRIBUSI LISDES - Desa Hoko',
+    description: 'Sewa rumah mess teknisi & gudang sementara di Desa Hoko (Bulan September)',
+    amount: 4500000,
+    date: '2026-09-05',
+    submittedBy: 'Bapak Wawan Kurnia (Mandor)',
+    approvedBy: 'Budi Santoso (Project Manager)',
+    status: 'Disetujui',
+    receiptPhotoUrl: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=400&auto=format&fit=crop&q=80',
+    notes: 'Bukti pembayaran sewa rumah kepala desa Hoko.'
+  },
+  {
+    id: 'BOP-004',
+    voucherNumber: 'BOP/ME/2026/10-008',
+    category: 'Perizinan & Koordinasi Lokal',
+    spbjId: 'SPBJ-003',
+    projectName: 'PEMBANGUNAN DAN PEMASANGAN JARINGAN DISTRIBUSI LISDES - Desa Ngurko',
+    description: 'Biaya koordinasi lintas jaringan & pembersihan tanam tumbuh (ROW) rute JTM',
+    amount: 1750000,
+    date: '2026-10-10',
+    submittedBy: 'Bapak Zaenal Arifin (Mandor)',
+    approvedBy: 'Admin Utama',
+    status: 'Menunggu Persetujuan',
+    receiptPhotoUrl: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=400&auto=format&fit=crop&q=80',
+    notes: 'Kuitansi kesepakatan pemangkasan pohon warga.'
+  },
+  {
+    id: 'BOP-005',
+    voucherNumber: 'BOP/ME/2026/11-001',
+    category: 'ATK & Operasional Gudang',
+    spbjId: 'SPBJ-004',
+    projectName: 'PEMBANGUNAN DAN PEMASANGAN JARINGAN DISTRIBUSI LISDES - Desa Letvuan',
+    description: 'Pembelian lakban VDE, spidol tagging cable, sarung tangan kain helper & formulir JSA',
+    amount: 820000,
+    date: '2026-11-02',
+    submittedBy: 'Gudang Tual',
+    approvedBy: 'Admin Utama',
+    status: 'Disetujui',
+    receiptPhotoUrl: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=400&auto=format&fit=crop&q=80',
+    notes: 'Nota Toko Teknik Tual.'
+  }
+];
+
+
+
 
 

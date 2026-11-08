@@ -1,36 +1,197 @@
 {
   "entities": {
-    "Project": {
-      "title": "Project",
-      "description": "Project details",
+    "SpbjContract": {
+      "title": "SpbjContract",
+      "description": "Surat Perjanjian Pengadaan Barang Jasa contract",
       "type": "object",
       "properties": {
         "id": { "type": "string" },
-        "name": { "type": "string" }
+        "spbjNumber": { "type": "string" },
+        "up3Name": { "type": "string" },
+        "contractEndDate": { "type": "string" },
+        "startDate": { "type": "string" },
+        "projectName": { "type": "string" },
+        "contractValue": { "type": "string" },
+        "vendorCompany": { "type": "string" },
+        "status": { "type": "string" },
+        "scopeOfWork": { "type": "string" },
+        "notes": { "type": "string" }
       },
-      "required": ["id", "name"]
+      "required": ["id", "spbjNumber", "up3Name", "projectName"]
     },
-    "MaterialSummaryItem": {
-      "title": "MaterialSummaryItem",
-      "description": "Material inventory items",
+    "BoqItem": {
+      "title": "BoqItem",
+      "description": "Bill of Quantities item",
       "type": "object",
       "properties": {
         "id": { "type": "string" },
-        "material": { "type": "string" },
-        "quantity": { "type": "string" },
+        "itemCode": { "type": "string" },
+        "spbjId": { "type": "string" },
+        "category": { "type": "string" },
+        "materialOrWork": { "type": "string" },
+        "unit": { "type": "string" },
+        "contractVolume": { "type": "number" },
+        "realizedVolume": { "type": "number" },
+        "unitPrice": { "type": "number" },
+        "totalPrice": { "type": "number" },
+        "realizedPrice": { "type": "number" }
+      },
+      "required": ["id", "itemCode", "spbjId", "materialOrWork"]
+    },
+    "Mandor": {
+      "title": "Mandor",
+      "description": "Supervisor mandor and assigned sites",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "phone": { "type": "string" },
+        "projectId": { "type": "string" },
+        "projectName": { "type": "string" },
+        "workLocation": { "type": "string" },
+        "subcontractorTeam": { "type": "string" },
+        "workerCount": { "type": "number" },
+        "status": { "type": "string" },
+        "specialization": { "type": "string" }
+      },
+      "required": ["id", "name", "workLocation"]
+    },
+    "VehicleCompany": {
+      "title": "VehicleCompany",
+      "description": "Company owned vehicle operational fleet",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "plateNumber": { "type": "string" },
+        "vehicleName": { "type": "string" },
+        "type": { "type": "string" },
+        "driverName": { "type": "string" },
+        "status": { "type": "string" },
+        "lastServiceDate": { "type": "string" },
+        "nextTaxDate": { "type": "string" }
+      },
+      "required": ["id", "plateNumber", "vehicleName", "driverName"]
+    },
+    "VehicleLease": {
+      "title": "VehicleLease",
+      "description": "Leased and rented vehicle contracts",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "contractNumber": { "type": "string" },
+        "vendorName": { "type": "string" },
+        "plateNumber": { "type": "string" },
+        "vehicleType": { "type": "string" },
+        "monthlyRate": { "type": "number" },
+        "startDate": { "type": "string" },
+        "endDate": { "type": "string" },
+        "status": { "type": "string" },
+        "assignedSite": { "type": "string" },
         "spbjId": { "type": "string" }
       },
-      "required": ["id", "material", "quantity", "spbjId"]
+      "required": ["id", "contractNumber", "vendorName", "plateNumber", "monthlyRate"]
+    },
+    "EmergencyWork": {
+      "title": "EmergencyWork",
+      "description": "Emergency electrical repair reports and dispatch",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "ticketNumber": { "type": "string" },
+        "locationName": { "type": "string" },
+        "severity": { "type": "string" },
+        "description": { "type": "string" },
+        "mandorName": { "type": "string" },
+        "teamCount": { "type": "number" },
+        "reportedTime": { "type": "string" },
+        "status": { "type": "string" }
+      },
+      "required": ["id", "ticketNumber", "locationName", "description", "status"]
+    },
+    "BopItem": {
+      "title": "BopItem",
+      "description": "Biaya Operasional Proyek site expense item",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "voucherNumber": { "type": "string" },
+        "category": { "type": "string" },
+        "spbjId": { "type": "string" },
+        "projectName": { "type": "string" },
+        "description": { "type": "string" },
+        "amount": { "type": "number" },
+        "date": { "type": "string" },
+        "submittedBy": { "type": "string" },
+        "status": { "type": "string" }
+      },
+      "required": ["id", "voucherNumber", "amount", "description", "status"]
+    },
+    "MaterialBongkarItem": {
+      "title": "MaterialBongkarItem",
+      "description": "Bongkaran material from site",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "itemCode": { "type": "string" },
+        "spbjId": { "type": "string" },
+        "category": { "type": "string" },
+        "materialName": { "type": "string" },
+        "unit": { "type": "string" },
+        "volumeBongkar": { "type": "number" },
+        "condition": { "type": "string" },
+        "warehouseLocation": { "type": "string" }
+      },
+      "required": ["id", "itemCode", "materialName", "volumeBongkar"]
+    },
+    "UserAccount": {
+      "title": "UserAccount",
+      "description": "User login accounts and roles",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "username": { "type": "string" },
+        "role": { "type": "string" }
+      },
+      "required": ["id", "name", "username", "role"]
     }
   },
   "firestore": {
-    "/projects/{projectId}": {
-      "schema": "Project",
-      "description": "Collection of projects"
+    "/spbjContracts/{spbjId}": {
+      "schema": "SpbjContract",
+      "description": "List of SPBJ contracts"
     },
-    "/materials/{materialId}": {
-      "schema": "MaterialSummaryItem",
-      "description": "Collection of materials"
+    "/boqItems/{boqId}": {
+      "schema": "BoqItem",
+      "description": "List of BOQ items"
+    },
+    "/mandors/{mandorId}": {
+      "schema": "Mandor",
+      "description": "List of mandors and multi-site locations"
+    },
+    "/companyVehicles/{vehicleId}": {
+      "schema": "VehicleCompany",
+      "description": "Company owned vehicles"
+    },
+    "/leaseVehicles/{leaseId}": {
+      "schema": "VehicleLease",
+      "description": "Leased vehicles"
+    },
+    "/emergencyWorks/{emergencyId}": {
+      "schema": "EmergencyWork",
+      "description": "Emergency electrical repair records"
+    },
+    "/bopItems/{bopId}": {
+      "schema": "BopItem",
+      "description": "Operational cost vouchers"
+    },
+    "/materialBongkar/{bongkarId}": {
+      "schema": "MaterialBongkarItem",
+      "description": "Bongkar materials"
+    },
+    "/users/{userId}": {
+      "schema": "UserAccount",
+      "description": "User accounts"
     }
   }
 }

@@ -194,3 +194,66 @@ export interface BoqItem {
   realizedPrice: number; // Total Nilai Realisasi (Rp)
 }
 
+export interface VehicleCompany {
+  id: string;
+  plateNumber: string;
+  vehicleName: string;
+  type: string; // e.g. "Pick-up 4x4", "Truk Crane 6T", "Mobil Operasional Site"
+  driverName: string;
+  status: 'Aktif Operasional' | 'Servis / Bengkel' | 'Standby / Pool';
+  lastServiceDate: string;
+  nextTaxDate: string;
+  spbjId?: string;
+  notes?: string;
+}
+
+export interface VehicleLease {
+  id: string;
+  contractNumber: string;
+  vendorName: string;
+  plateNumber: string;
+  vehicleType: string;
+  monthlyRate: number; // Biaya Sewa Per Bulan (Rp)
+  startDate: string;
+  endDate: string;
+  status: 'Aktif' | 'Mendekati Expired' | 'Selesai Kontrak';
+  assignedSite: string;
+  spbjId: string;
+  notes?: string;
+}
+
+export interface EmergencyWork {
+  id: string;
+  ticketNumber: string;
+  locationName: string;
+  spbjId?: string;
+  severity: 'Kritis / Blackout' | 'Tinggi / Trip Breaker' | 'Sedang';
+  description: string;
+  mandorName: string;
+  teamCount: number;
+  reportedTime: string;
+  targetResponseTime: string;
+  actionTaken: string;
+  status: 'Dalam Penanganan (On-Site)' | 'Menunggu Sparepart' | 'Selesai / Normal';
+  reportedBy: string;
+  notes?: string;
+}
+
+export interface BopItem {
+  id: string;
+  voucherNumber: string;
+  category: 'Konsumsi & Makan Tim' | 'BBM & Tol Kendaraan' | 'Sewa Mess & Akomodasi' | 'Perizinan & Koordinasi Lokal' | 'ATK & Operasional Gudang' | 'Kas Kecil / Lainnya';
+  spbjId: string;
+  projectName: string;
+  description: string;
+  amount: number; // Biaya (Rp)
+  date: string;
+  submittedBy: string;
+  approvedBy: string;
+  status: 'Disetujui' | 'Menunggu Persetujuan' | 'Ditolak';
+  receiptPhotoUrl?: string;
+  notes?: string;
+}
+
+
+
