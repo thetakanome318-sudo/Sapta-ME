@@ -83,7 +83,7 @@ export default function App() {
 
   // User Authentication & Management State
   const [users, setUsers] = useState<UserAccount[]>(INITIAL_USERS);
-  const [currentUser, setCurrentUser] = useState<UserAccount | null>(INITIAL_USERS[0]);
+  const [currentUser, setCurrentUser] = useState<UserAccount | null>(null);
 
   // Core Datasets
   const [projects, setProjects] = useState<Project[]>(INITIAL_PROJECTS);
