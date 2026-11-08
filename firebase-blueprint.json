@@ -159,6 +159,20 @@
         "allowedMenus": { "type": "array" }
       },
       "required": ["id", "name", "username", "role"]
+    },
+    "PlanItem": {
+      "title": "PlanItem",
+      "description": "Scheduled project work plan item",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "projectId": { "type": "string" },
+        "projectName": { "type": "string" },
+        "date": { "type": "string" },
+        "description": { "type": "string" },
+        "status": { "type": "string" }
+      },
+      "required": ["id", "projectId", "date", "description", "status"]
     }
   },
   "firestore": {
@@ -197,6 +211,10 @@
     "/users/{userId}": {
       "schema": "UserAccount",
       "description": "User accounts"
+    },
+    "/planItems/{planId}": {
+      "schema": "PlanItem",
+      "description": "Project work plan items"
     }
   }
 }

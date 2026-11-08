@@ -260,5 +260,14 @@ export interface BopItem {
   notes?: string;
 }
 
+export interface PlanItem {
+  id: string;
+  projectId: string;
+  projectName: string;
+  date: string;
+  description: string;
+  status: 'Rencana' | 'Selesai';
+}
+
 
 

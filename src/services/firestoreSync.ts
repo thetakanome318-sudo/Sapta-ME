@@ -17,7 +17,8 @@ import {
   EmergencyWork, 
   BopItem, 
   MaterialBongkarItem, 
-  UserAccount 
+  UserAccount,
+  PlanItem 
 } from '../types';
 import { 
   INITIAL_SPBJ_CONTRACTS, 
@@ -384,6 +385,38 @@ export async function upsertUser(item: UserAccount) {
 
 export async function deleteUser(id: string) {
   const path = 'users';
+  try {
+    await deleteDoc(doc(db, path, id));
+  } catch (error) {
+    handleFirestoreError(error, OperationType.DELETE, `${path}/${id}`);
+  }
+}
+
+// 10. Plan Items
+export function subscribePlanItems(callback: (data: PlanItem[]) => void) {
+  const path = 'planItems';
+  return onSnapshot(
+    collection(db, path),
+    (snapshot) => {
+      const items: PlanItem[] = [];
+      snapshot.forEach((docSnap) => items.push(docSnap.data() as PlanItem));
+      callback(items);
+    },
+    (error) => handleFirestoreError(error, OperationType.LIST, path)
+  );
+}
+
+export async function upsertPlanItem(item: PlanItem) {
+  const path = 'planItems';
+  try {
+    await setDoc(doc(db, path, item.id), cleanData(item));
+  } catch (error) {
+    handleFirestoreError(error, OperationType.WRITE, `${path}/${item.id}`);
+  }
+}
+
+export async function deletePlanItem(id: string) {
+  const path = 'planItems';
   try {
     await deleteDoc(doc(db, path, id));
   } catch (error) {

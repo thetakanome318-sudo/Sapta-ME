@@ -52,6 +52,11 @@ service cloud.firestore {
       allow create, update, delete: if isValidId(userId);
     }
 
+    match /planItems/{planId} {
+      allow get, list: if true;
+      allow create, update, delete: if isValidId(planId);
+    }
+
     match /test/{docId} {
       allow read, write: if true;
     }
