@@ -173,6 +173,22 @@
         "status": { "type": "string" }
       },
       "required": ["id", "projectId", "date", "description", "status"]
+    },
+    "LocationTag": {
+      "title": "LocationTag",
+      "description": "Geographic location tag for assets",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "spbjId": { "type": "string" },
+        "name": { "type": "string" },
+        "type": { "type": "string" },
+        "lat": { "type": "number" },
+        "lng": { "type": "number" },
+        "status": { "type": "string" },
+        "lastChecked": { "type": "string" }
+      },
+      "required": ["id", "spbjId", "name", "type", "lat", "lng", "status"]
     }
   },
   "firestore": {
@@ -215,6 +231,10 @@
     "/planItems/{planId}": {
       "schema": "PlanItem",
       "description": "Project work plan items"
+    },
+    "/locationTags/{tagId}": {
+      "schema": "LocationTag",
+      "description": "Geographic asset tags"
     }
   }
 }

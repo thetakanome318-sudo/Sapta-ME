@@ -18,7 +18,8 @@ import {
   BopItem, 
   MaterialBongkarItem, 
   UserAccount,
-  PlanItem 
+  PlanItem,
+  LocationTag 
 } from '../types';
 import { 
   INITIAL_SPBJ_CONTRACTS, 
@@ -417,6 +418,38 @@ export async function upsertPlanItem(item: PlanItem) {
 
 export async function deletePlanItem(id: string) {
   const path = 'planItems';
+  try {
+    await deleteDoc(doc(db, path, id));
+  } catch (error) {
+    handleFirestoreError(error, OperationType.DELETE, `${path}/${id}`);
+  }
+}
+
+// 11. Location Tags
+export function subscribeLocationTags(callback: (data: LocationTag[]) => void) {
+  const path = 'locationTags';
+  return onSnapshot(
+    collection(db, path),
+    (snapshot) => {
+      const items: LocationTag[] = [];
+      snapshot.forEach((docSnap) => items.push(docSnap.data() as LocationTag));
+      callback(items);
+    },
+    (error) => handleFirestoreError(error, OperationType.LIST, path)
+  );
+}
+
+export async function upsertLocationTag(item: LocationTag) {
+  const path = 'locationTags';
+  try {
+    await setDoc(doc(db, path, item.id), cleanData(item));
+  } catch (error) {
+    handleFirestoreError(error, OperationType.WRITE, `${path}/${item.id}`);
+  }
+}
+
+export async function deleteLocationTag(id: string) {
+  const path = 'locationTags';
   try {
     await deleteDoc(doc(db, path, id));
   } catch (error) {

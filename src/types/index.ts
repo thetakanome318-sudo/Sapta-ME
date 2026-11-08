@@ -269,5 +269,16 @@ export interface PlanItem {
   status: 'Rencana' | 'Selesai';
 }
 
+export interface LocationTag {
+  id: string;
+  spbjId: string;
+  name: string;
+  type: 'Substation' | 'Pole' | 'Transformer' | 'Other';
+  lat: number;
+  lng: number;
+  status: 'Verified' | 'Pending';
+  lastChecked: string;
+}
+
 
 
