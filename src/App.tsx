@@ -176,10 +176,34 @@ export default function App() {
     upsertUser(newUser);
   };
 
+  const handleUpdateUser = (updatedUser: UserAccount) => {
+    setUsers(users.map((u) => (u.id === updatedUser.id ? updatedUser : u)));
+    upsertUser(updatedUser);
+    if (currentUser && currentUser.id === updatedUser.id) {
+      setCurrentUser(updatedUser);
+    }
+  };
+
   const handleDeleteUser = (id: string) => {
     setUsers(users.filter((u) => u.id !== id));
     deleteUser(id);
   };
+
+  // Enforce user menu permissions on activeTab
+  useEffect(() => {
+    if (currentUser && currentUser.role !== 'Admin' && currentUser.allowedMenus && currentUser.allowedMenus.length > 0) {
+      const allowed = currentUser.allowedMenus;
+      const isAllowed = allowed.some((menuId) => 
+        menuId === activeTab || 
+        (menuId === 'monitoring-pekerjaan' && activeTab.startsWith('monitoring-')) ||
+        (menuId === 'monitoring-kendaraan' && (activeTab === 'vehicle-company' || activeTab === 'vehicle-lease')) ||
+        (menuId === 'warehouse' && (activeTab === 'warehouse-ambon' || activeTab === 'warehouse-tual'))
+      );
+      if (!isAllowed) {
+        setActiveTab(allowed[0]);
+      }
+    }
+  }, [currentUser, activeTab]);
 
   // BOQ Actions (Cloud Synchronized)
   const handleAddBoqItem = (newItem: BoqItem) => {
@@ -584,6 +608,7 @@ export default function App() {
             <MasterDataView
               users={users}
               onAddUser={handleAddUser}
+              onUpdateUser={handleUpdateUser}
               onDeleteUser={handleDeleteUser}
               projects={projects}
               onAddProject={handleAddProject}

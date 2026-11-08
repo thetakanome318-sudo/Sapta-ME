@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { UserAccount } from '../types';
-import { Lock, User, ShieldCheck, ArrowRight, KeyRound, AlertCircle, Sparkles, Zap } from 'lucide-react';
+import { Lock, User, ArrowRight, AlertCircle } from 'lucide-react';
 import bgTrafoGrid from '../assets/images/trafo_power_grid_1794098426049.jpg';
 import logoPtSapta from '../assets/images/logo_pt_sapta_manunggal_karya_white.png';
 
@@ -32,14 +32,8 @@ export const LoginView: React.FC<LoginViewProps> = ({ users, onLoginSuccess }) =
     if (match) {
       onLoginSuccess(match);
     } else {
-      setErrorMsg('Nama akun atau password tidak cocok. Silakan coba lagi atau gunakan Akun Demo.');
+      setErrorMsg('Nama akun atau kata sandi tidak cocok. Silakan periksa kembali.');
     }
-  };
-
-  const handleQuickLogin = (demoUser: UserAccount) => {
-    setUsername(demoUser.username);
-    setPassword(demoUser.password || '123456');
-    onLoginSuccess(demoUser);
   };
 
   return (
@@ -128,31 +122,6 @@ export const LoginView: React.FC<LoginViewProps> = ({ users, onLoginSuccess }) =
               <ArrowRight className="w-4 h-4" />
             </button>
           </form>
-
-          {/* Quick Demo Login Cards */}
-          <div className="pt-4 border-t border-slate-800 space-y-3">
-            <span className="text-[11px] sm:text-xs font-semibold text-slate-400 uppercase tracking-wider block text-center">
-              Pilih Akun Demo Cepat (1-Klik Login):
-            </span>
-            <div className="grid grid-cols-2 gap-3">
-              {users.slice(0, 4).map((u) => (
-                <button
-                  key={u.id}
-                  type="button"
-                  onClick={() => handleQuickLogin(u)}
-                  className="p-3 sm:p-3.5 bg-slate-950 hover:bg-slate-800 border border-slate-800 rounded-xl text-left transition-all hover:border-amber-400/50 group cursor-pointer"
-                >
-                  <span className="text-xs sm:text-sm font-bold text-white block group-hover:text-amber-400 truncate">
-                    {u.name}
-                  </span>
-                  <div className="flex items-center justify-between text-[10px] sm:text-xs text-slate-400 mt-1.5 font-mono">
-                    <span>{u.username}</span>
-                    <span className="text-amber-400/90 font-semibold">{u.role}</span>
-                  </div>
-                </button>
-              ))}
-            </div>
-          </div>
         </div>
 
         {/* Footer */}

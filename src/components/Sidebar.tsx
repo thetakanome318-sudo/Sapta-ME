@@ -164,68 +164,85 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </div>
         </div>
 
-        {/* Navigation Links */}
+        {/* Navigation Links (Filtered by User Role & Allowed Menus) */}
         <nav className="flex-1 px-3 py-4 space-y-1.5 overflow-y-auto">
-          {navItems.map((item) => {
-            const IconComponent = item.icon;
-            const hasSubItems = item.subItems && item.subItems.length > 0;
-            const isParentActive = activeTab === item.id || (hasSubItems && item.subItems?.some(sub => activeTab === sub.id));
-            const isExpanded = expandedMenus[item.id];
+          {navItems
+            .filter((item) => {
+              if (!currentUser || currentUser.role === 'Admin') return true;
+              const allowed = currentUser.allowedMenus;
+              if (!allowed || allowed.length === 0) return true;
+              if (allowed.includes(item.id)) return true;
+              if (item.subItems && item.subItems.some(sub => allowed.includes(sub.id) || allowed.includes(item.id))) {
+                return true;
+              }
+              return false;
+            })
+            .map((item) => {
+              const IconComponent = item.icon;
+              const allowedSubItems = item.subItems?.filter((sub) => {
+                if (!currentUser || currentUser.role === 'Admin') return true;
+                const allowed = currentUser.allowedMenus;
+                if (!allowed || allowed.length === 0) return true;
+                return allowed.includes(sub.id) || allowed.includes(item.id);
+              });
+              const hasSubItems = allowedSubItems && allowedSubItems.length > 0;
+              const isParentActive = activeTab === item.id || (hasSubItems && allowedSubItems?.some(sub => activeTab === sub.id));
+              const isExpanded = expandedMenus[item.id];
 
-            return (
-              <div key={item.id} className="space-y-1">
-                <button
-                  onClick={() => {
-                    if (hasSubItems) {
-                      toggleMenu(item.id);
-                    } else {
-                      setActiveTab(item.id);
-                      setSidebarOpen(false);
-                    }
-                  }}
-                  className={`w-full flex items-center justify-between gap-3 px-3.5 py-3 rounded-xl text-xs font-semibold transition-all ${
-                    isParentActive
-                      ? 'bg-amber-400 text-slate-950 shadow-md shadow-amber-400/20 font-bold'
-                      : 'text-slate-300 hover:bg-slate-800 hover:text-white'
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <IconComponent className={`w-4 h-4 shrink-0 ${isParentActive ? 'text-slate-950' : 'text-amber-400'}`} />
-                    <span className="truncate">{item.label}</span>
-                  </div>
-                  {hasSubItems && (
-                    isExpanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />
+              return (
+                <div key={item.id} className="space-y-1">
+                  <button
+                    onClick={() => {
+                      if (hasSubItems) {
+                        toggleMenu(item.id);
+                      } else {
+                        setActiveTab(item.id);
+                        setSidebarOpen(false);
+                      }
+                    }}
+                    className={`w-full flex items-center justify-between gap-3 px-3.5 py-3 rounded-xl text-xs font-semibold transition-all ${
+                      isParentActive
+                        ? 'bg-amber-400 text-slate-950 shadow-md shadow-amber-400/20 font-bold'
+                        : 'text-slate-300 hover:bg-slate-800 hover:text-white'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <IconComponent className={`w-4 h-4 shrink-0 ${isParentActive ? 'text-slate-950' : 'text-amber-400'}`} />
+                      <span className="truncate">{item.label}</span>
+                    </div>
+                    {hasSubItems && (
+                      isExpanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />
+                    )}
+                  </button>
+
+                  {hasSubItems && isExpanded && (
+                    <div className="pl-9 space-y-1">
+                      {allowedSubItems.map((sub) => {
+                        const SubIcon = sub.icon;
+                        const isSubActive = activeTab === sub.id;
+                        return (
+                          <button
+                            key={sub.id}
+                            onClick={() => {
+                              setActiveTab(sub.id);
+                              setSidebarOpen(false);
+                            }}
+                            className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-[11px] font-medium transition-all ${
+                              isSubActive
+                                ? 'text-amber-400 bg-slate-800'
+                                : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800/50'
+                            }`}
+                          >
+                            <SubIcon className="w-3.5 h-3.5 shrink-0" />
+                            <span className="truncate">{sub.label}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
                   )}
-                </button>
-
-                {hasSubItems && isExpanded && (
-                  <div className="pl-9 space-y-1">
-                    {item.subItems?.map((sub) => {
-                      const SubIcon = sub.icon;
-                      const isSubActive = activeTab === sub.id;
-                      return (
-                        <button
-                          key={sub.id}
-                          onClick={() => {
-                            setActiveTab(sub.id);
-                            setSidebarOpen(false);
-                          }}
-                          className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-[11px] font-medium transition-all ${
-                            isSubActive
-                              ? 'text-amber-400 bg-slate-800'
-                              : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800/50'
-                          }`}
-                        >
-                          <SubIcon className="w-3.5 h-3.5 shrink-0" />
-                          <span className="truncate">{sub.label}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-            );
-          })}
+                </div>
+              );
+            })}
         </nav>
 
         {/* Bottom Actions (Online Sync Cloud & Theme Toggle) */}

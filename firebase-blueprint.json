@@ -151,7 +151,12 @@
         "id": { "type": "string" },
         "name": { "type": "string" },
         "username": { "type": "string" },
-        "role": { "type": "string" }
+        "role": { "type": "string" },
+        "phone": { "type": "string" },
+        "email": { "type": "string" },
+        "department": { "type": "string" },
+        "status": { "type": "string" },
+        "allowedMenus": { "type": "array" }
       },
       "required": ["id", "name", "username", "role"]
     }

@@ -177,7 +177,12 @@ export interface UserAccount {
   name: string;
   username: string;
   password?: string;
-  role: 'Admin' | 'Project Manager' | 'Teknisi' | 'Gudang';
+  role: string;
+  phone?: string;
+  email?: string;
+  department?: string;
+  status?: 'Aktif' | 'Non-Aktif';
+  allowedMenus?: string[];
 }
 
 export interface BoqItem {

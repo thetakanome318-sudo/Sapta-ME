@@ -579,10 +579,54 @@ export const INITIAL_NON_MDU_MATERIALS: MaterialSummaryItem[] = [
 ];
 
 export const INITIAL_USERS: UserAccount[] = [
-  { id: 'USR-01', name: 'Admin Utama', username: 'admin', password: 'admin123', role: 'Admin' },
-  { id: 'USR-02', name: 'Budi Santoso', username: 'budi', password: 'pm123', role: 'Project Manager' },
-  { id: 'USR-03', name: 'Rahmat Hidayat', username: 'rahmat', password: 'teknisi123', role: 'Teknisi' },
-  { id: 'USR-04', name: 'Gudang Ambon', username: 'gudang', password: 'gudang123', role: 'Gudang' },
+  { 
+    id: 'USR-01', 
+    name: 'Admin Utama', 
+    username: 'admin', 
+    password: 'admin123', 
+    role: 'Admin',
+    phone: '0812-3456-7890',
+    email: 'admin.me@sapta.co.id',
+    department: 'Direksi & Manajemen ME',
+    status: 'Aktif',
+    allowedMenus: ['spbj', 'boq', 'mandor', 'monitoring-pekerjaan', 'emergency-work', 'monitoring-kendaraan', 'logistics-labor', 'bop', 'warehouse', 'presentation', 'whatsapp-report', 'master-data']
+  },
+  { 
+    id: 'USR-02', 
+    name: 'Budi Santoso', 
+    username: 'budi', 
+    password: 'pm123', 
+    role: 'Project Manager',
+    phone: '0813-8877-6655',
+    email: 'budi.santoso@sapta.co.id',
+    department: 'Divisi Operasional & Proyek',
+    status: 'Aktif',
+    allowedMenus: ['spbj', 'boq', 'mandor', 'monitoring-pekerjaan', 'emergency-work', 'monitoring-kendaraan', 'logistics-labor', 'bop', 'presentation', 'whatsapp-report']
+  },
+  { 
+    id: 'USR-03', 
+    name: 'Rahmat Hidayat', 
+    username: 'rahmat', 
+    password: 'teknisi123', 
+    role: 'Teknisi',
+    phone: '0857-4433-2211',
+    email: 'rahmat.hidayat@sapta.co.id',
+    department: 'Teknisi Lapangan ME',
+    status: 'Aktif',
+    allowedMenus: ['mandor', 'monitoring-pekerjaan', 'emergency-work', 'whatsapp-report']
+  },
+  { 
+    id: 'USR-04', 
+    name: 'Gudang Ambon', 
+    username: 'gudang', 
+    password: 'gudang123', 
+    role: 'Gudang',
+    phone: '0811-2233-4455',
+    email: 'gudang.ambon@sapta.co.id',
+    department: 'Logistik & Gudang',
+    status: 'Aktif',
+    allowedMenus: ['monitoring-kendaraan', 'logistics-labor', 'warehouse', 'whatsapp-report']
+  },
 ];
 
 export const INITIAL_BOQ_ITEMS: BoqItem[] = [
