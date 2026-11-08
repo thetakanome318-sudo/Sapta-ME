@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { UserAccount } from '../types';
 import { Lock, User, ShieldCheck, ArrowRight, KeyRound, AlertCircle, Sparkles, Zap } from 'lucide-react';
-import bgCubicle from '../assets/images/cubicle_substation_bg_1794093274847.jpg';
+import bgTrafoGrid from '../assets/images/trafo_power_grid_1794098426049.jpg';
 
 interface LoginViewProps {
   users: UserAccount[];
@@ -43,27 +43,15 @@ export const LoginView: React.FC<LoginViewProps> = ({ users, onLoginSuccess }) =
 
   return (
     <div className="min-h-screen bg-slate-950 flex flex-col justify-center items-center p-4 relative overflow-hidden font-sans">
-      {/* Background 20kV Cubicle Substation Photo */}
+      {/* Background Pekerjaan Trafo dan Jaringan Listrik */}
       <div className="absolute inset-0 z-0">
         <img 
-          src={bgCubicle} 
-          alt="20kV Electrical Cubicle Substation" 
-          className="w-full h-full object-cover filter brightness-[0.35] contrast-125 scale-105"
+          src={bgTrafoGrid} 
+          alt="Pekerjaan Trafo dan Jaringan Listrik" 
+          className="w-full h-full object-cover filter brightness-[0.72] contrast-105"
         />
-        {/* Dark Gradient Overlay for Maximum Text Contrast & Professionalism */}
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/85 to-slate-950/60 backdrop-blur-[2px]" />
-      </div>
-
-      {/* Background Subtle Blueprint Grid */}
-      <div className="absolute inset-0 opacity-15 pointer-events-none z-0">
-        <svg className="w-full h-full" width="100%" height="100%">
-          <defs>
-            <pattern id="loginGrid" width="40" height="40" patternUnits="userSpaceOnUse">
-              <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#38bdf8" strokeWidth="0.5" />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#loginGrid)" />
-        </svg>
+        {/* Subtle Vignette & Gradient Overlay to Keep Photo Crisp while Preserving Text Legibility */}
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/40 to-slate-950/60" />
       </div>
 
       {/* Main Login Card */}

@@ -8,39 +8,48 @@ service cloud.firestore {
     }
 
     match /spbjContracts/{spbjId} {
-      allow read, write: if isValidId(spbjId);
+      allow get, list: if true;
+      allow create, update, delete: if isValidId(spbjId);
     }
 
     match /boqItems/{boqId} {
-      allow read, write: if isValidId(boqId);
+      allow get, list: if true;
+      allow create, update, delete: if isValidId(boqId);
     }
 
     match /mandors/{mandorId} {
-      allow read, write: if isValidId(mandorId);
+      allow get, list: if true;
+      allow create, update, delete: if isValidId(mandorId);
     }
 
     match /companyVehicles/{vehicleId} {
-      allow read, write: if isValidId(vehicleId);
+      allow get, list: if true;
+      allow create, update, delete: if isValidId(vehicleId);
     }
 
     match /leaseVehicles/{leaseId} {
-      allow read, write: if isValidId(leaseId);
+      allow get, list: if true;
+      allow create, update, delete: if isValidId(leaseId);
     }
 
     match /emergencyWorks/{emergencyId} {
-      allow read, write: if isValidId(emergencyId);
+      allow get, list: if true;
+      allow create, update, delete: if isValidId(emergencyId);
     }
 
     match /bopItems/{bopId} {
-      allow read, write: if isValidId(bopId);
+      allow get, list: if true;
+      allow create, update, delete: if isValidId(bopId);
     }
 
     match /materialBongkar/{bongkarId} {
-      allow read, write: if isValidId(bongkarId);
+      allow get, list: if true;
+      allow create, update, delete: if isValidId(bongkarId);
     }
 
     match /users/{userId} {
-      allow read, write: if isValidId(userId);
+      allow get, list: if true;
+      allow create, update, delete: if isValidId(userId);
     }
 
     match /test/{docId} {
