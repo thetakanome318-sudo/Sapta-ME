@@ -19,7 +19,8 @@ import {
   MaterialBongkarItem, 
   UserAccount,
   PlanItem,
-  LocationTag 
+  LocationTag,
+  WageAdvance
 } from '../types';
 import { 
   INITIAL_SPBJ_CONTRACTS, 
@@ -48,6 +49,40 @@ function cleanData<T extends Record<string, any>>(obj: T): T {
     }
   }
   return result;
+}
+
+// ... existing sync functions ...
+
+// 12. Wage Advances
+export function subscribeWageAdvances(callback: (data: WageAdvance[]) => void) {
+  const path = 'wageAdvances';
+  return onSnapshot(
+    collection(db, path),
+    (snapshot) => {
+      const items: WageAdvance[] = [];
+      snapshot.forEach((docSnap) => items.push(docSnap.data() as WageAdvance));
+      callback(items);
+    },
+    (error) => handleFirestoreError(error, OperationType.LIST, path)
+  );
+}
+
+export async function upsertWageAdvance(item: WageAdvance) {
+  const path = 'wageAdvances';
+  try {
+    await setDoc(doc(db, path, item.id), cleanData(item));
+  } catch (error) {
+    handleFirestoreError(error, OperationType.WRITE, `${path}/${item.id}`);
+  }
+}
+
+export async function deleteWageAdvance(id: string) {
+  const path = 'wageAdvances';
+  try {
+    await deleteDoc(doc(db, path, id));
+  } catch (error) {
+    handleFirestoreError(error, OperationType.DELETE, `${path}/${id}`);
+  }
 }
 
 // 1. SPBJ Contracts

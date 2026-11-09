@@ -30,7 +30,9 @@ import {
   Car,
   LogOut,
   Siren,
-  Receipt
+  Receipt,
+  Wallet,
+  Plus
 } from 'lucide-react';
 import { UserAccount } from '../types';
 
@@ -69,7 +71,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const navItems = [
     { id: 'spbj', label: 'Daftar SPBJ', icon: FileText },
     { id: 'boq', label: 'Bill of Quantities (BOQ)', icon: FileSpreadsheet },
-    { id: 'mandor', label: 'Mandor Pekerjaan', icon: HardHat },
+    { id: 'mandor', label: 'Database Mandor', icon: Users },
+    { id: 'wage-advance', label: 'Panjar Mandor', icon: Wallet },
     { 
       id: 'monitoring-pekerjaan', 
       label: 'Monitoring Pekerjaan', 
@@ -85,7 +88,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
         { id: 'monitoring-bongkar', label: 'Material Bongkar', icon: Package }
       ]
     },
-    { id: 'emergency-work', label: 'Pekerjaan Emergency', icon: Siren },
+    { 
+      id: 'emergency-management', 
+      label: 'Emergency & Gangguan', 
+      icon: Siren,
+      subItems: [
+        { id: 'emergency-work', label: 'Pekerjaan Emergency', icon: Siren },
+        { id: 'rehap-work', label: 'Pekerjaan Rehap', icon: Wrench },
+        { id: 'pohon-tumbang', label: 'Pohon Tumbang', icon: Zap },
+        { id: 'other-work', label: 'Pekerjaan Lain', icon: Plus }
+      ]
+    },
     {
       id: 'monitoring-kendaraan',
       label: 'Monitoring Kendaraan',

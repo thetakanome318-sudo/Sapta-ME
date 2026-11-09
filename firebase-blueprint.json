@@ -104,7 +104,8 @@
         "mandorName": { "type": "string" },
         "teamCount": { "type": "number" },
         "reportedTime": { "type": "string" },
-        "status": { "type": "string" }
+        "status": { "type": "string" },
+        "workType": { "type": "string" }
       },
       "required": ["id", "ticketNumber", "locationName", "description", "status"]
     },
@@ -189,6 +190,26 @@
         "lastChecked": { "type": "string" }
       },
       "required": ["id", "spbjId", "name", "type", "lat", "lng", "status"]
+    },
+    "WageAdvance": {
+      "title": "WageAdvance",
+      "description": "Wage advance (Panjar Upah) for mandors",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "spbjId": { "type": "string" },
+        "projectName": { "type": "string" },
+        "mandorName": { "type": "string" },
+        "description": { "type": "string" },
+        "amount": { "type": "number" },
+        "date": { "type": "string" },
+        "submittedBy": { "type": "string" },
+        "approvedBy": { "type": "string" },
+        "status": { "type": "string" },
+        "receiptPhotoUrl": { "type": "string" },
+        "notes": { "type": "string" }
+      },
+      "required": ["id", "spbjId", "mandorName", "amount", "date", "status"]
     }
   },
   "firestore": {
@@ -235,6 +256,10 @@
     "/locationTags/{tagId}": {
       "schema": "LocationTag",
       "description": "Geographic asset tags"
+    },
+    "/wageAdvances/{advanceId}": {
+      "schema": "WageAdvance",
+      "description": "Mandor wage advance records"
     }
   }
 }

@@ -241,6 +241,7 @@ export interface EmergencyWork {
   actionTaken: string;
   status: 'Dalam Penanganan (On-Site)' | 'Menunggu Sparepart' | 'Selesai / Normal';
   reportedBy: string;
+  workType: 'Emergency' | 'Rehap' | 'Pohon Tumbang' | 'Lain-lain';
   notes?: string;
 }
 
@@ -278,6 +279,21 @@ export interface LocationTag {
   lng: number;
   status: 'Verified' | 'Pending';
   lastChecked: string;
+}
+
+export interface WageAdvance {
+  id: string;
+  spbjId: string;
+  projectName: string;
+  mandorName: string;
+  description: string;
+  amount: number;
+  date: string;
+  submittedBy: string;
+  approvedBy?: string;
+  status: 'Pending' | 'Approved' | 'Paid' | 'Rejected';
+  receiptPhotoUrl?: string;
+  notes?: string;
 }
 
 

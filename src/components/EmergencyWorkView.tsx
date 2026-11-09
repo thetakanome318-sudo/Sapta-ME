@@ -24,6 +24,7 @@ interface EmergencyWorkViewProps {
   mandors: Mandor[];
   onAddEmergencyWork: (work: Omit<EmergencyWork, 'id'>) => void;
   onUpdateStatus: (id: string, status: EmergencyWork['status']) => void;
+  workType: 'Emergency' | 'Rehap' | 'Pohon Tumbang' | 'Lain-lain';
 }
 
 export const EmergencyWorkView: React.FC<EmergencyWorkViewProps> = ({
@@ -32,6 +33,7 @@ export const EmergencyWorkView: React.FC<EmergencyWorkViewProps> = ({
   mandors,
   onAddEmergencyWork,
   onUpdateStatus,
+  workType,
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [severityFilter, setSeverityFilter] = useState<string>('ALL');
@@ -85,6 +87,7 @@ export const EmergencyWorkView: React.FC<EmergencyWorkViewProps> = ({
       actionTaken: actionTaken || 'Tim K3 & teknisi disiagakan menuju lokasi.',
       status,
       reportedBy,
+      workType,
       notes: notes || undefined,
     });
 
@@ -126,10 +129,13 @@ export const EmergencyWorkView: React.FC<EmergencyWorkViewProps> = ({
               Tanggap Darurat & Fast Response ME
             </div>
             <h1 className="text-2xl font-bold text-white tracking-tight flex items-center gap-2">
-              Pekerjaan Emergency
+              Pekerjaan {workType}
             </h1>
             <p className="text-slate-400 text-sm mt-1 max-w-2xl">
-              Monitoring penanganan gangguan mendesak, blackout jaringan 20kV/JTR, perbaikan trafo meledak, dan dispatch tim emergency.
+              {workType === 'Emergency' && 'Monitoring penanganan gangguan mendesak, blackout jaringan 20kV/JTR, perbaikan trafo meledak, dan dispatch tim emergency.'}
+              {workType === 'Rehap' && 'Manajemen pemeliharaan rehabilitasi jaringan, penggantian komponen usang, dan peningkatan keandalan sistem.'}
+              {workType === 'Pohon Tumbang' && 'Penanganan gangguan akibat dahan/pohon tumbang, koordinasi ROW, dan pembersihan jalur jaringan.'}
+              {workType === 'Lain-lain' && 'Monitoring pekerjaan khusus dan penanganan insiden lainnya di luar kategori standar.'}
             </p>
           </div>
           <button
@@ -137,7 +143,7 @@ export const EmergencyWorkView: React.FC<EmergencyWorkViewProps> = ({
             className="inline-flex items-center gap-2 px-4 py-2.5 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-lg text-sm transition-all shadow-lg shadow-rose-600/20"
           >
             <Plus className="w-4 h-4" />
-            Lapor Laporan Emergency Baru
+            Lapor {workType} Baru
           </button>
         </div>
       </div>
@@ -369,7 +375,7 @@ export const EmergencyWorkView: React.FC<EmergencyWorkViewProps> = ({
             <div className="bg-slate-950 px-6 py-4 border-b border-slate-800 flex justify-between items-center">
               <div className="flex items-center gap-2">
                 <Siren className="w-5 h-5 text-rose-500" />
-                <h3 className="font-bold text-white">Lapor Pekerjaan Emergency ME</h3>
+                <h3 className="font-bold text-white">Lapor Pekerjaan {workType} Baru</h3>
               </div>
               <button
                 onClick={() => setIsAddModalOpen(false)}
@@ -381,7 +387,7 @@ export const EmergencyWorkView: React.FC<EmergencyWorkViewProps> = ({
             <form onSubmit={handleSubmit} className="p-6 space-y-4 text-xs">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block font-medium text-slate-300 mb-1">No. Tiket Emergency</label>
+                  <label className="block font-medium text-slate-300 mb-1">No. Tiket {workType}</label>
                   <input
                     type="text"
                     required
@@ -505,7 +511,7 @@ export const EmergencyWorkView: React.FC<EmergencyWorkViewProps> = ({
                   type="submit"
                   className="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-lg transition-colors shadow-lg shadow-rose-600/20"
                 >
-                  Simpan & Dispatch Emergency
+                  Simpan & Dispatch {workType}
                 </button>
               </div>
             </form>

@@ -40,7 +40,8 @@ import {
   deleteMaterialBongkar,
   subscribeUsers,
   upsertUser,
-  deleteUser
+  deleteUser,
+  subscribeWageAdvances
 } from './services/firestoreSync';
 
 import { Sidebar } from './components/Sidebar';
@@ -75,6 +76,7 @@ import { WorkerDetailModal } from './components/WorkerDetailModal';
 import { CheckInModal } from './components/CheckInModal';
 
 import { LoginView } from './components/LoginView';
+import { WageAdvanceView } from './components/WageAdvanceView';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<string>('spbj');
@@ -157,6 +159,10 @@ export default function App() {
       if (data && data.length > 0) setUsers(data);
     });
 
+    const unsubWageAdvances = subscribeWageAdvances((data) => {
+      // Potentially used for global totals if needed
+    });
+
     return () => {
       unsubSpbj();
       unsubBoq();
@@ -167,6 +173,7 @@ export default function App() {
       unsubBop();
       unsubBongkar();
       unsubUsers();
+      unsubWageAdvances();
     };
   }, []);
 
@@ -197,7 +204,9 @@ export default function App() {
         menuId === activeTab || 
         (menuId === 'monitoring-pekerjaan' && activeTab.startsWith('monitoring-')) ||
         (menuId === 'monitoring-kendaraan' && (activeTab === 'vehicle-company' || activeTab === 'vehicle-lease')) ||
-        (menuId === 'warehouse' && (activeTab === 'warehouse-ambon' || activeTab === 'warehouse-tual'))
+        (menuId === 'warehouse' && (activeTab === 'warehouse-ambon' || activeTab === 'warehouse-tual')) ||
+        (menuId === 'emergency-management' && ['emergency-work', 'rehap-work', 'pohon-tumbang', 'other-work'].includes(activeTab)) ||
+        menuId === activeTab
       );
       if (!isAllowed) {
         setActiveTab(allowed[0]);
@@ -508,11 +517,45 @@ export default function App() {
 
           {activeTab === 'emergency-work' && (
             <EmergencyWorkView
-              emergencyWorks={emergencyWorks}
+              emergencyWorks={emergencyWorks.filter(w => w.workType === 'Emergency' || !w.workType)}
               spbjList={spbjContracts}
               mandors={mandors}
               onAddEmergencyWork={handleAddEmergencyWork}
               onUpdateStatus={handleUpdateEmergencyWorkStatus}
+              workType="Emergency"
+            />
+          )}
+
+          {activeTab === 'rehap-work' && (
+            <EmergencyWorkView
+              emergencyWorks={emergencyWorks.filter(w => w.workType === 'Rehap')}
+              spbjList={spbjContracts}
+              mandors={mandors}
+              onAddEmergencyWork={handleAddEmergencyWork}
+              onUpdateStatus={handleUpdateEmergencyWorkStatus}
+              workType="Rehap"
+            />
+          )}
+
+          {activeTab === 'pohon-tumbang' && (
+            <EmergencyWorkView
+              emergencyWorks={emergencyWorks.filter(w => w.workType === 'Pohon Tumbang')}
+              spbjList={spbjContracts}
+              mandors={mandors}
+              onAddEmergencyWork={handleAddEmergencyWork}
+              onUpdateStatus={handleUpdateEmergencyWorkStatus}
+              workType="Pohon Tumbang"
+            />
+          )}
+
+          {activeTab === 'other-work' && (
+            <EmergencyWorkView
+              emergencyWorks={emergencyWorks.filter(w => w.workType === 'Lain-lain')}
+              spbjList={spbjContracts}
+              mandors={mandors}
+              onAddEmergencyWork={handleAddEmergencyWork}
+              onUpdateStatus={handleUpdateEmergencyWorkStatus}
+              workType="Lain-lain"
             />
           )}
 
@@ -581,6 +624,10 @@ export default function App() {
 
           {activeTab === 'logistics-labor' && (
             <LogisticsLaborCostView />
+          )}
+          
+          {activeTab === 'wage-advance' && (
+            <WageAdvanceView spbjList={spbjContracts} />
           )}
 
           {activeTab === 'bop' && (

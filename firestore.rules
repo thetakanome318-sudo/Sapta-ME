@@ -61,6 +61,11 @@ service cloud.firestore {
       allow get, list: if true;
       allow create, update, delete: if isValidId(tagId);
     }
+    
+    match /wageAdvances/{advanceId} {
+      allow get, list: if true;
+      allow create, update, delete: if isValidId(advanceId);
+    }
 
     match /test/{docId} {
       allow read, write: if true;

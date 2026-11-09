@@ -589,7 +589,7 @@ export const INITIAL_USERS: UserAccount[] = [
     email: 'admin.me@sapta.co.id',
     department: 'Direksi & Manajemen ME',
     status: 'Aktif',
-    allowedMenus: ['spbj', 'boq', 'mandor', 'monitoring-pekerjaan', 'emergency-work', 'monitoring-kendaraan', 'logistics-labor', 'bop', 'warehouse', 'presentation', 'whatsapp-report', 'master-data']
+    allowedMenus: ['spbj', 'boq', 'mandor', 'wage-advance', 'monitoring-pekerjaan', 'emergency-management', 'monitoring-kendaraan', 'logistics-labor', 'bop', 'warehouse', 'presentation', 'whatsapp-report', 'master-data']
   },
   { 
     id: 'USR-02', 
@@ -601,7 +601,7 @@ export const INITIAL_USERS: UserAccount[] = [
     email: 'budi.santoso@sapta.co.id',
     department: 'Divisi Operasional & Proyek',
     status: 'Aktif',
-    allowedMenus: ['spbj', 'boq', 'mandor', 'monitoring-pekerjaan', 'emergency-work', 'monitoring-kendaraan', 'logistics-labor', 'bop', 'presentation', 'whatsapp-report']
+    allowedMenus: ['spbj', 'boq', 'mandor', 'wage-advance', 'monitoring-pekerjaan', 'emergency-management', 'monitoring-kendaraan', 'logistics-labor', 'bop', 'presentation', 'whatsapp-report']
   },
   { 
     id: 'USR-03', 
@@ -863,6 +863,7 @@ export const INITIAL_EMERGENCY_WORKS: EmergencyWork[] = [
     actionTaken: 'Tim K3 & penarik kabel meluncur dengan Mobil 4x4, terminasi ulang jointing 20kV & pemasangan arrester baru.',
     status: 'Dalam Penanganan (On-Site)',
     reportedBy: 'Dispatched by PLN UP3 Tual Call Center',
+    workType: 'Emergency',
     notes: 'Prioritas utama agar suplai listrik Desa Tamangil kembali pulih.'
   },
   {
@@ -879,6 +880,7 @@ export const INITIAL_EMERGENCY_WORKS: EmergencyWork[] = [
     actionTaken: 'Penggantian 3 bh Fuse Cut Out & Uji tahanan isolasi trafo 50kVA dengan Megger 5kV. Sistem sudah kembali penormalan.',
     status: 'Selesai / Normal',
     reportedBy: 'Supervisor PLN UP3 Tual',
+    workType: 'Emergency',
     notes: 'Pekerjaan telah rampung dan berita acara penormalan sudah ditandatangani.'
   },
   {
@@ -895,6 +897,7 @@ export const INITIAL_EMERGENCY_WORKS: EmergencyWork[] = [
     actionTaken: 'Penyetelan andongan kabel JTR & penambahan pole bracket.',
     status: 'Menunggu Sparepart',
     reportedBy: 'Petugas Lapangan SMK',
+    workType: 'Emergency',
     notes: 'Menunggu tambahan klem suspension dari Gudang Tual.'
   }
 ];
@@ -974,6 +977,33 @@ export const INITIAL_BOP_ITEMS: BopItem[] = [
     status: 'Disetujui',
     receiptPhotoUrl: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=400&auto=format&fit=crop&q=80',
     notes: 'Nota Toko Teknik Tual.'
+  }
+];
+
+export const INITIAL_WAGE_ADVANCES: WageAdvance[] = [
+  {
+    id: 'ADV-001',
+    spbjId: 'SPBJ-001',
+    projectName: 'PEMBANGUNAN DAN PEMASANGAN JARINGAN DISTRIBUSI LISDES - Desa Tamangil',
+    mandorName: 'Bapak Karmin Suhartono',
+    description: 'Panjar upah awal untuk tim penarikan JTM Desa Tamangil (Tahap 1)',
+    amount: 15000000,
+    date: '2026-11-02',
+    submittedBy: 'Admin Utama',
+    status: 'Paid',
+    notes: 'Sudah ditransfer ke rekening mandor.'
+  },
+  {
+    id: 'ADV-002',
+    spbjId: 'SPBJ-002',
+    projectName: 'PEMBANGUNAN DAN PEMASANGAN JARINGAN DISTRIBUSI LISDES - Desa Hoko',
+    mandorName: 'Bapak Wawan Kurnia',
+    description: 'Panjar biaya mobilisasi tim & alat ke site Desa Hoko',
+    amount: 8500000,
+    date: '2026-11-05',
+    submittedBy: 'Admin Utama',
+    status: 'Pending',
+    notes: 'Menunggu tanda tangan PM.'
   }
 ];
 
