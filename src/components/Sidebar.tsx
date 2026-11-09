@@ -112,6 +112,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         { id: 'other-work', label: 'Pekerjaan Lain', icon: Plus }
       ]
     },
+    { id: 'map-maker', label: 'Map Maker (Offline)', icon: MapPin },
     { 
       id: 'warehouse', 
       label: 'Gudang / Stock', 
@@ -169,6 +170,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
     if (warehouseFamily.includes(id)) {
       if (allowed.some(a => warehouseFamily.includes(a))) return true;
     }
+
+    // Map Maker is a new tool, allow it for everyone who is logged in
+    if (id === 'map-maker') return true;
 
     return false;
   };

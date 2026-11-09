@@ -328,5 +328,15 @@ export interface LogisticsLaborCost {
   notes?: string;
 }
 
+export interface MapPoint {
+  id: string;
+  name: string;
+  lat: number;
+  lng: number;
+  timestamp: string;
+  type: 'Waypoint' | 'TrackPoint';
+  description?: string;
+}
+
 
 

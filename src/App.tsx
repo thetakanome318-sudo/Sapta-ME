@@ -88,6 +88,7 @@ import { SpbjSummaryView } from './components/SpbjSummaryView';
 
 import { LoginView } from './components/LoginView';
 import { WageAdvanceView } from './components/WageAdvanceView';
+import { MapMakerView } from './components/MapMakerView';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<string>('spbj');
@@ -122,6 +123,14 @@ export default function App() {
   // Modals State
   const [selectedWorkerForModal, setSelectedWorkerForModal] = useState<Worker | null>(null);
   const [showCheckInModal, setShowCheckInModal] = useState<boolean>(false);
+  const [mapsQuotaExceeded, setMapsQuotaExceeded] = useState(false);
+
+  // Google Maps Quota Listener
+  useEffect(() => {
+    const handleQuotaExceeded = () => setMapsQuotaExceeded(true);
+    window.addEventListener('gmp-quota-exceeded', handleQuotaExceeded);
+    return () => window.removeEventListener('gmp-quota-exceeded', handleQuotaExceeded);
+  }, []);
 
   // Dark Mode Sync
   useEffect(() => {
@@ -490,6 +499,22 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors font-sans flex relative">
+      {mapsQuotaExceeded && (
+        <div className="bg-amber-50 border-b border-amber-200 text-amber-900 px-4 py-2.5 text-xs md:text-sm text-center sticky top-0 z-50 shadow-sm w-full absolute left-0 right-0">
+          <span>
+            Google Maps Platform quota reached. If you are the app owner, visit{' '}
+            <a
+              href="https://developers.google.com/maps/ai/ai-studio?utm_campaign=gmp_mcp_codeassist_v1_aistudio#quota_exceeded_errors"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline font-semibold text-amber-950 hover:text-amber-800"
+            >
+              maps developer site
+            </a>{' '}
+            for instructions to update your account.
+          </span>
+        </div>
+      )}
       {/* Background Wallpaper Watermark (Pekerjaan Jaringan Listrik & Trafo) */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
         <img
@@ -846,6 +871,10 @@ export default function App() {
               onAddTask={handleAddTask}
               onUpdateTaskStatus={handleUpdateTaskStatus}
             />
+          )}
+
+          {activeTab === 'map-maker' && (
+            <MapMakerView />
           )}
 
           {activeTab === 'equipment' && (

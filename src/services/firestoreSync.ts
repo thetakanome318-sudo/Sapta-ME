@@ -22,7 +22,8 @@ import {
   LocationTag,
   WageAdvance,
   LogisticsLaborCost,
-  ManpowerRecord
+  ManpowerRecord,
+  MapPoint
 } from '../types';
 import { 
   INITIAL_SPBJ_CONTRACTS, 
@@ -585,4 +586,34 @@ export async function deleteManpowerRecord(id: string) {
     handleFirestoreError(error, OperationType.DELETE, `${path}/${id}`);
   }
 }
+// 15. Map Maker Points
+export function subscribeMapPoints(callback: (data: MapPoint[]) => void) {
+  const path = 'mapPoints';
+  return onSnapshot(
+    collection(db, path),
+    (snapshot) => {
+      const items: MapPoint[] = [];
+      snapshot.forEach((docSnap) => items.push(docSnap.data() as MapPoint));
+      callback(items);
+    },
+    (error) => handleFirestoreError(error, OperationType.LIST, path)
+  );
+}
 
+export async function upsertMapPoint(item: MapPoint) {
+  const path = 'mapPoints';
+  try {
+    await setDoc(doc(db, path, item.id), cleanData(item));
+  } catch (error) {
+    handleFirestoreError(error, OperationType.WRITE, `${path}/${item.id}`);
+  }
+}
+
+export async function deleteMapPoint(id: string) {
+  const path = 'mapPoints';
+  try {
+    await deleteDoc(doc(db, path, id));
+  } catch (error) {
+    handleFirestoreError(error, OperationType.DELETE, `${path}/${id}`);
+  }
+}

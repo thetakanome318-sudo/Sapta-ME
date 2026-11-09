@@ -589,7 +589,7 @@ export const INITIAL_USERS: UserAccount[] = [
     email: 'admin.me@sapta.co.id',
     department: 'Direksi & Manajemen ME',
     status: 'Aktif',
-    allowedMenus: ['spbj', 'spbj-list', 'spbj-summary', 'boq', 'mandor', 'bop', 'bop-angkutan', 'bop-buruh', 'wage-advance', 'bop-operasional', 'bop-sewa-mobil', 'bop-management', 'logistics-labor', 'monitoring-pekerjaan', 'emergency-management', 'monitoring-kendaraan', 'warehouse', 'presentation', 'whatsapp-report', 'master-data']
+    allowedMenus: ['spbj', 'spbj-list', 'spbj-summary', 'boq', 'mandor', 'bop', 'bop-angkutan', 'bop-buruh', 'wage-advance', 'bop-operasional', 'bop-sewa-mobil', 'bop-management', 'logistics-labor', 'monitoring-pekerjaan', 'emergency-management', 'monitoring-kendaraan', 'warehouse', 'map-maker', 'presentation', 'whatsapp-report', 'master-data']
   },
   { 
     id: 'USR-02', 
@@ -601,7 +601,7 @@ export const INITIAL_USERS: UserAccount[] = [
     email: 'budi.santoso@sapta.co.id',
     department: 'Divisi Operasional & Proyek',
     status: 'Aktif',
-    allowedMenus: ['spbj', 'spbj-list', 'spbj-summary', 'boq', 'mandor', 'bop', 'bop-angkutan', 'bop-buruh', 'wage-advance', 'bop-operasional', 'bop-sewa-mobil', 'bop-management', 'logistics-labor', 'monitoring-pekerjaan', 'emergency-management', 'monitoring-kendaraan', 'presentation', 'whatsapp-report']
+    allowedMenus: ['spbj', 'spbj-list', 'spbj-summary', 'boq', 'mandor', 'bop', 'bop-angkutan', 'bop-buruh', 'wage-advance', 'bop-operasional', 'bop-sewa-mobil', 'bop-management', 'logistics-labor', 'monitoring-pekerjaan', 'emergency-management', 'monitoring-kendaraan', 'map-maker', 'presentation', 'whatsapp-report']
   },
   { 
     id: 'USR-03', 
