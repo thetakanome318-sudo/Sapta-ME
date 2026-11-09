@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { SpbjContract, Project } from '../types';
+import { SpbjContract, Project, BoqItem, Mandor, ManpowerRecord, LogisticsLaborCost, BopItem, VehicleLease, EmergencyWork, MaterialBongkarItem, MaterialSummaryItem, Equipment, TaskAssignment, LocationTag, Worker } from '../types';
 import { 
   FileText, 
   Plus, 
@@ -15,8 +15,10 @@ import {
   ShieldCheck,
   ChevronRight,
   Layers,
-  Eye
+  Eye,
+  ArrowLeft
 } from 'lucide-react';
+import { SpbjSummaryView } from './SpbjSummaryView';
 
 interface SpbjViewProps {
   spbjList: SpbjContract[];
@@ -26,6 +28,20 @@ interface SpbjViewProps {
   activeTab?: string;
   setActiveTab?: (tab: string) => void;
   onOpenSummary?: (spbjId: string) => void;
+  boqItems?: BoqItem[];
+  mandors?: Mandor[];
+  manpowerList?: ManpowerRecord[];
+  logisticsLaborCosts?: LogisticsLaborCost[];
+  bopItems?: BopItem[];
+  leaseVehicles?: VehicleLease[];
+  emergencyWorks?: EmergencyWork[];
+  materialBongkarItems?: MaterialBongkarItem[];
+  mduMaterials?: MaterialSummaryItem[];
+  nonMduMaterials?: MaterialSummaryItem[];
+  equipment?: Equipment[];
+  tasks?: TaskAssignment[];
+  locationTags?: LocationTag[];
+  workers?: Worker[];
 }
 
 export const SpbjView: React.FC<SpbjViewProps> = ({
@@ -36,13 +52,31 @@ export const SpbjView: React.FC<SpbjViewProps> = ({
   activeTab,
   setActiveTab,
   onOpenSummary,
+  boqItems = [],
+  mandors = [],
+  manpowerList = [],
+  logisticsLaborCosts = [],
+  bopItems = [],
+  leaseVehicles = [],
+  emergencyWorks = [],
+  materialBongkarItems = [],
+  mduMaterials = [],
+  nonMduMaterials = [],
+  equipment = [],
+  tasks = [],
+  locationTags = [],
+  workers = [],
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [up3Filter, setUp3Filter] = useState('all');
   const [showForm, setShowForm] = useState(false);
 
-  // Form Input State matching the exact requirements: NO SPBJ, UP3/Nama Pekerjaan, Nilai Kontrak, Tanggal Mulai, Tanggal Akhir
+  // View Mode: 'table' or 'summary'
+  const [viewMode, setViewMode] = useState<'table' | 'summary'>('table');
+  const [selectedSummarySpbjId, setSelectedSummarySpbjId] = useState<string>(spbjList[0]?.id || '');
+
+  // Form Input State
   const [spbjNumber, setSpbjNumber] = useState('');
   const [projectNameInput, setProjectNameInput] = useState('');
   const [up3Name, setUp3Name] = useState('UP3 Tual');
@@ -52,7 +86,7 @@ export const SpbjView: React.FC<SpbjViewProps> = ({
   const [scopeOfWork, setScopeOfWork] = useState('');
   const [notes, setNotes] = useState('');
 
-  // Addendum / Edit Expiry Modal State
+  // Addendum Modal State
   const [editingSpbj, setEditingSpbj] = useState<SpbjContract | null>(null);
   const [editDateInput, setEditDateInput] = useState('');
 
@@ -184,6 +218,11 @@ export const SpbjView: React.FC<SpbjViewProps> = ({
   }).length;
   const expiredCount = spbjList.filter((s) => calculateDaysRemaining(s.contractEndDate) < 0).length;
 
+  const handleOpenSpbjSummary = (spbjId: string) => {
+    setSelectedSummarySpbjId(spbjId);
+    setViewMode('summary');
+  };
+
   return (
     <div className="space-y-8 pb-12">
       {/* Title Bar */}
@@ -191,32 +230,65 @@ export const SpbjView: React.FC<SpbjViewProps> = ({
         <div>
           <h2 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
             <FileText className="w-6 h-6 text-amber-500" />
-            <span>Monitoring Kontrak SPBJ & UP3 PLN</span>
+            <span>Daftar SPBJ Kontrak & Rangkuman 360°</span>
           </h2>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-            Tabel monitoring Surat Perjanjian Barang dan Jasa (SPBJ) sesuai format standar PLN (Nama Pekerjaan, No SPBJ, Nilai Kontrak, Tanggal Mulai, Tanggal Akhir).
+            Manajemen Surat Perjanjian Barang dan Jasa (SPBJ) PLN dan konsolidasi rangkuman seluruh inputan terkait per SPBJ.
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          {setActiveTab && (
+          <div className="flex bg-slate-200 dark:bg-slate-800 p-1 rounded-xl text-xs font-semibold">
             <button
-              onClick={() => setActiveTab('spbj-summary')}
-              className="flex items-center gap-2 px-3.5 py-2 text-xs font-bold text-amber-400 bg-slate-900 border border-amber-400/40 hover:bg-slate-800 rounded-lg shadow-sm transition-colors"
+              onClick={() => setViewMode('table')}
+              className={`px-3 py-1.5 rounded-lg transition-colors ${viewMode === 'table' ? 'bg-amber-400 text-slate-950 font-bold shadow-xs' : 'text-slate-600 dark:text-slate-300'}`}
             >
-              <Layers className="w-4 h-4 text-amber-400" />
-              <span>Rangkuman 360° per SPBJ</span>
+              Tabel SPBJ ({spbjList.length})
             </button>
-          )}
+            <button
+              onClick={() => {
+                if (!selectedSummarySpbjId && spbjList.length > 0) setSelectedSummarySpbjId(spbjList[0].id);
+                setViewMode('summary');
+              }}
+              className={`px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 ${viewMode === 'summary' ? 'bg-amber-400 text-slate-950 font-bold shadow-xs' : 'text-slate-600 dark:text-slate-300'}`}
+            >
+              <Layers className="w-3.5 h-3.5" />
+              <span>Rangkuman 360° SPBJ</span>
+            </button>
+          </div>
+
           <button
             onClick={() => setShowForm(!showForm)}
-            className="flex items-center gap-2 px-4 py-2 text-xs font-semibold text-slate-950 bg-amber-400 hover:bg-amber-300 rounded-lg shadow-sm shadow-amber-400/20 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 text-xs font-semibold text-slate-950 bg-amber-400 hover:bg-amber-300 rounded-xl shadow-sm shadow-amber-400/20 transition-colors"
           >
             <Plus className="w-4 h-4" />
             <span>{showForm ? 'Tutup Menu Input' : '+ Input SPBJ Baru'}</span>
           </button>
         </div>
       </div>
+
+      {viewMode === 'summary' ? (
+        <SpbjSummaryView
+          spbjList={spbjList}
+          initialSpbjId={selectedSummarySpbjId}
+          boqItems={boqItems}
+          mandors={mandors}
+          manpowerList={manpowerList}
+          logisticsLaborCosts={logisticsLaborCosts}
+          bopItems={bopItems}
+          leaseVehicles={leaseVehicles}
+          emergencyWorks={emergencyWorks}
+          materialBongkarItems={materialBongkarItems}
+          mduMaterials={mduMaterials}
+          nonMduMaterials={nonMduMaterials}
+          equipment={equipment}
+          tasks={tasks}
+          locationTags={locationTags}
+          workers={workers}
+          setActiveTab={setActiveTab}
+        />
+      ) : (
+        <>
 
       {/* Stats Summary Strip */}
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
@@ -261,7 +333,7 @@ export const SpbjView: React.FC<SpbjViewProps> = ({
         </div>
       </div>
 
-      {/* Menu Input SPBJ Form (NO SPBJ, UP3, & Tanggal Akhir Kontrak) */}
+      {/* Menu Input SPBJ Form */}
       {showForm && (
         <div className="bg-white dark:bg-slate-900 rounded-2xl border border-amber-400/40 dark:border-amber-500/30 p-6 shadow-md space-y-6">
           <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
@@ -276,7 +348,6 @@ export const SpbjView: React.FC<SpbjViewProps> = ({
 
           <form onSubmit={handleSubmitSpbj} className="space-y-4 text-xs">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {/* NO SPBJ */}
               <div>
                 <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
                   NO SURAT PERJANJIAN / SPBJ <span className="text-rose-500">*</span>
@@ -291,7 +362,6 @@ export const SpbjView: React.FC<SpbjViewProps> = ({
                 />
               </div>
 
-              {/* UP3 PLN */}
               <div>
                 <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
                   UP3 (Unit Pelaksana Pelayanan Pelanggan) <span className="text-rose-500">*</span>
@@ -310,7 +380,6 @@ export const SpbjView: React.FC<SpbjViewProps> = ({
               </div>
             </div>
 
-            {/* Nama Pekerjaan */}
             <div>
               <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
                 Nama Pekerjaan <span className="text-rose-500">*</span>
@@ -326,7 +395,6 @@ export const SpbjView: React.FC<SpbjViewProps> = ({
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              {/* Nilai Kontrak */}
               <div>
                 <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
                   Nilai Kontrak (Rp)
@@ -340,7 +408,6 @@ export const SpbjView: React.FC<SpbjViewProps> = ({
                 />
               </div>
 
-              {/* Tanggal Mulai */}
               <div>
                 <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
                   Tanggal Mulai
@@ -353,7 +420,6 @@ export const SpbjView: React.FC<SpbjViewProps> = ({
                 />
               </div>
 
-              {/* Tanggal Akhir Kontrak */}
               <div>
                 <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
                   Tanggal Akhir Kontrak <span className="text-rose-500">*</span>
@@ -429,12 +495,11 @@ export const SpbjView: React.FC<SpbjViewProps> = ({
         </div>
       </div>
 
-      {/* Tabel Monitoring SPBJ - Styled exactly like the reference image with deep navy header */}
+      {/* Tabel Monitoring SPBJ - Styled with deep navy header */}
       <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-md">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
-              {/* Deep Navy Header matching reference image: bg-[#0B2545] */}
               <tr className="bg-[#0B2545] text-white font-bold uppercase tracking-wider text-[11px] border-b border-[#133863]">
                 <th className="p-4 text-center w-16 border-r border-[#133863]">NO</th>
                 <th className="p-4 border-r border-[#133863]">NAMA PEKERJAAN</th>
@@ -442,7 +507,7 @@ export const SpbjView: React.FC<SpbjViewProps> = ({
                 <th className="p-4 border-r border-[#133863]">NILAI KONTRAK</th>
                 <th className="p-4 border-r border-[#133863]">TANGGAL MULAI</th>
                 <th className="p-4 border-r border-[#133863]">TANGGAL AKHIR</th>
-                <th className="p-4 text-center">STATUS / AKSI</th>
+                <th className="p-4 text-center">STATUS / RANGKUMAN SPBJ</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-200 dark:divide-slate-800 text-slate-800 dark:text-slate-200">
@@ -456,12 +521,10 @@ export const SpbjView: React.FC<SpbjViewProps> = ({
                       index % 2 === 1 ? 'bg-slate-50/80 dark:bg-slate-900/50' : 'bg-white dark:bg-slate-900'
                     }`}
                   >
-                    {/* NO */}
                     <td className="p-4 text-center font-mono font-bold text-slate-900 dark:text-white border-r border-slate-200 dark:border-slate-800">
                       {index + 1}
                     </td>
 
-                    {/* NAMA PEKERJAAN */}
                     <td className="p-4 font-medium text-slate-900 dark:text-white border-r border-slate-200 dark:border-slate-800 leading-relaxed">
                       {spbj.projectName}
                       <span className="block text-[10px] text-amber-600 dark:text-amber-400 font-mono mt-0.5">
@@ -469,50 +532,41 @@ export const SpbjView: React.FC<SpbjViewProps> = ({
                       </span>
                     </td>
 
-                    {/* NO SURAT PERJANJIAN / SPBJ */}
                     <td className="p-4 font-mono font-bold text-slate-800 dark:text-slate-200 border-r border-slate-200 dark:border-slate-800 whitespace-nowrap">
                       {spbj.spbjNumber}
                     </td>
 
-                    {/* NILAI KONTRAK */}
                     <td className="p-4 font-mono font-bold text-slate-900 dark:text-white border-r border-slate-200 dark:border-slate-800 whitespace-nowrap">
                       {spbj.contractValue}
                     </td>
 
-                    {/* TANGGAL MULAI */}
                     <td className="p-4 font-mono text-slate-700 dark:text-slate-300 border-r border-slate-200 dark:border-slate-800 whitespace-nowrap">
                       {formatDateDisplay(spbj.startDate || '2026-08-19')}
                     </td>
 
-                    {/* TANGGAL AKHIR */}
                     <td className="p-4 font-mono font-bold text-slate-900 dark:text-white border-r border-slate-200 dark:border-slate-800 whitespace-nowrap">
                       {formatDateDisplay(spbj.contractEndDate)}
                     </td>
 
-                    {/* STATUS / AKSI */}
                     <td className="p-4 text-center whitespace-nowrap">
-                      <div className="flex items-center justify-center gap-1.5">
+                      <div className="flex items-center justify-center gap-2">
                         {getStatusBadge(spbj.contractEndDate, spbj.status)}
+                        
                         <button
-                          onClick={() => {
-                            if (onOpenSummary) {
-                              onOpenSummary(spbj.id);
-                            } else if (setActiveTab) {
-                              setActiveTab('spbj-summary');
-                            }
-                          }}
-                          className="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-amber-400 border border-amber-400/40 font-bold rounded text-[10px] transition-colors flex items-center gap-1"
-                          title="Lihat Rangkuman 360° SPBJ ini"
+                          onClick={() => handleOpenSpbjSummary(spbj.id)}
+                          className="px-3 py-1.5 bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold rounded-lg text-xs transition-all shadow-xs flex items-center gap-1.5"
+                          title="Lihat Rangkuman Konsolidasi SPBJ ini"
                         >
-                          <Eye className="w-3 h-3" />
-                          Rangkuman
+                          <Layers className="w-3.5 h-3.5 text-slate-950" />
+                          <span>Rangkuman 360°</span>
                         </button>
+
                         <button
                           onClick={() => {
                             setEditingSpbj(spbj);
                             setEditDateInput(spbj.contractEndDate);
                           }}
-                          className="px-2 py-1 bg-amber-400 hover:bg-amber-300 text-slate-950 font-semibold rounded text-[10px] transition-colors"
+                          className="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold rounded text-[10px] transition-colors border border-slate-700"
                           title="Perpanjang / Addendum Tanggal Akhir"
                         >
                           Addendum
@@ -569,6 +623,8 @@ export const SpbjView: React.FC<SpbjViewProps> = ({
             </div>
           </div>
         </div>
+      )}
+        </>
       )}
     </div>
   );

@@ -10,7 +10,11 @@ import {
   VehicleLease, 
   EmergencyWork, 
   MaterialBongkarItem,
-  MaterialSummaryItem
+  MaterialSummaryItem,
+  Equipment,
+  TaskAssignment,
+  LocationTag,
+  Worker
 } from '../types';
 import { 
   FileText, 
@@ -54,6 +58,10 @@ interface SpbjSummaryViewProps {
   materialBongkarItems: MaterialBongkarItem[];
   mduMaterials?: MaterialSummaryItem[];
   nonMduMaterials?: MaterialSummaryItem[];
+  equipment?: Equipment[];
+  tasks?: TaskAssignment[];
+  locationTags?: LocationTag[];
+  workers?: Worker[];
   setActiveTab?: (tab: string) => void;
 }
 
@@ -78,13 +86,31 @@ export const SpbjSummaryView: React.FC<SpbjSummaryViewProps> = ({
   materialBongkarItems,
   mduMaterials = [],
   nonMduMaterials = [],
+  equipment = [],
+  tasks = [],
+  locationTags = [],
+  workers = [],
   setActiveTab,
 }) => {
   const [selectedSpbjId, setSelectedSpbjId] = useState<string>(
     initialSpbjId || (spbjList.length > 0 ? spbjList[0].id : '')
   );
 
-  const [activeSummaryTab, setActiveSummaryTab] = useState<'overview' | 'boq' | 'manpower' | 'costs' | 'vehicles' | 'emergency' | 'materials'>('overview');
+  const [activeSummaryTab, setActiveSummaryTab] = useState<
+    | 'overview'
+    | 'boq'
+    | 'realisasi'
+    | 'mdu-nonmdu'
+    | 'bongkar'
+    | 'alat'
+    | 'timeline'
+    | 'tagging'
+    | 'apd'
+    | 'manpower'
+    | 'costs'
+    | 'vehicles'
+    | 'emergency'
+  >('overview');
 
   const selectedSpbj = spbjList.find((s) => s.id === selectedSpbjId) || spbjList[0];
 
@@ -117,6 +143,12 @@ export const SpbjSummaryView: React.FC<SpbjSummaryViewProps> = ({
   const matchedVehicles = leaseVehicles.filter((v) => v.spbjId === selectedSpbj.id);
   const matchedEmergency = emergencyWorks.filter((e) => e.spbjId === selectedSpbj.id);
   const matchedBongkar = materialBongkarItems.filter((m) => m.spbjId === selectedSpbj.id);
+  const matchedMdu = (mduMaterials || []).filter((m) => m.spbjId === selectedSpbj.id);
+  const matchedNonMdu = (nonMduMaterials || []).filter((m) => m.spbjId === selectedSpbj.id);
+  const matchedEquipment = (equipment || []).filter((e) => e.currentProjectId === selectedSpbj.id || e.currentProjectId === selectedSpbj.up3Name);
+  const matchedTasks = (tasks || []).filter((t) => t.projectId === selectedSpbj.id || t.projectName?.includes(selectedSpbj.spbjNumber) || t.projectName?.includes(selectedSpbj.up3Name));
+  const matchedLocationTags = (locationTags || []).filter((l) => l.spbjId === selectedSpbj.id);
+  const matchedWorkers = (workers || []).filter((w) => w.projectId === selectedSpbj.id || w.projectName?.includes(selectedSpbj.up3Name));
 
   // Financial Calculations
   const totalBoqContractValue = matchedBoq.reduce((sum, item) => sum + (item.totalPrice || 0), 0);
@@ -396,11 +428,17 @@ export const SpbjSummaryView: React.FC<SpbjSummaryViewProps> = ({
         {[
           { id: 'overview', label: 'Ringkasan Utama', icon: Layers, count: null },
           { id: 'boq', label: 'BOQ Pekerjaan', icon: FileSpreadsheet, count: matchedBoq.length },
+          { id: 'realisasi', label: 'Realisasi Pekerjaan', icon: TrendingUp, count: matchedBoq.filter(b => (b.realizedVolume || 0) > 0).length },
+          { id: 'mdu-nonmdu', label: 'Material MDU & Non-MDU', icon: Box, count: matchedMdu.length + matchedNonMdu.length },
+          { id: 'bongkar', label: 'Material Bongkar', icon: Package, count: matchedBongkar.length },
+          { id: 'alat', label: 'Alat Kerja & Kalibrasi', icon: Activity, count: matchedEquipment.length },
+          { id: 'timeline', label: 'Timeline Pekerjaan', icon: Calendar, count: matchedTasks.length },
+          { id: 'tagging', label: 'Tagging Lokasi', icon: MapPin, count: matchedLocationTags.length },
+          { id: 'apd', label: 'Monitoring APD', icon: HardHat, count: matchedWorkers.length },
           { id: 'manpower', label: 'Mandor & Manpower', icon: Users, count: matchedManpower.length },
           { id: 'costs', label: 'Angkutan, Buruh & BOP', icon: Receipt, count: matchedAngkutan.length + matchedBuruh.length + matchedBop.length },
           { id: 'vehicles', label: 'Sewa Mobil & Armada', icon: Car, count: matchedVehicles.length },
           { id: 'emergency', label: 'Emergency & Incident', icon: Siren, count: matchedEmergency.length },
-          { id: 'materials', label: 'Material & Bongkar', icon: Package, count: matchedBongkar.length },
         ].map((tab) => {
           const Icon = tab.icon;
           const isActive = activeSummaryTab === tab.id;
@@ -788,6 +826,320 @@ export const SpbjSummaryView: React.FC<SpbjSummaryViewProps> = ({
               </div>
             )}
           </div>
+        </div>
+      )}
+
+      {/* TAB CONTENT: REALISASI PEKERJAAN */}
+      {activeSummaryTab === 'realisasi' && (
+        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-lg space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+            <h3 className="text-sm font-bold text-white flex items-center gap-2">
+              <TrendingUp className="w-4 h-4 text-emerald-400" />
+              Realisasi Pekerjaan & Progres Fisik ({matchedBoq.length} Item BOQ)
+            </h3>
+          </div>
+          {matchedBoq.length === 0 ? (
+            <p className="text-xs text-slate-500 italic py-4 text-center">Belum ada data realisasi pekerjaan untuk SPBJ ini.</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs text-slate-300">
+                <thead className="bg-slate-950 text-slate-400 font-semibold uppercase text-[10px] tracking-wider border-b border-slate-800">
+                  <tr>
+                    <th className="py-2.5 px-3">Uraian Pekerjaan</th>
+                    <th className="py-2.5 px-3">Sat</th>
+                    <th className="py-2.5 px-3 text-right">Vol RAB</th>
+                    <th className="py-2.5 px-3 text-right">Vol Realisasi</th>
+                    <th className="py-2.5 px-3 text-right">Nilai Realisasi (Rp)</th>
+                    <th className="py-2.5 px-3 text-right">Bobot (%)</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-800/60 font-medium">
+                  {matchedBoq.map((b) => {
+                    const bobot = totalBoqContractValue > 0 ? (((b.realizedPrice || 0) / totalBoqContractValue) * 100).toFixed(2) : '0.00';
+                    return (
+                      <tr key={b.id} className="hover:bg-slate-800/40">
+                        <td className="py-2.5 px-3 font-bold text-white">{b.materialOrWork}</td>
+                        <td className="py-2.5 px-3 text-slate-400">{b.unit}</td>
+                        <td className="py-2.5 px-3 text-right font-mono">{b.contractVolume}</td>
+                        <td className="py-2.5 px-3 text-right font-mono text-emerald-400 font-bold">{b.realizedVolume}</td>
+                        <td className="py-2.5 px-3 text-right font-mono text-emerald-400">{formatRupiah(b.realizedPrice || 0)}</td>
+                        <td className="py-2.5 px-3 text-right font-mono text-amber-400 font-bold">{bobot}%</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* TAB CONTENT: MATERIAL MDU & NON-MDU */}
+      {activeSummaryTab === 'mdu-nonmdu' && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-lg space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+              <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                <Box className="w-4 h-4 text-amber-400" />
+                Material MDU ({matchedMdu.length} Item)
+              </h3>
+            </div>
+            {matchedMdu.length === 0 ? (
+              <p className="text-xs text-slate-500 italic py-4 text-center">Belum ada material MDU terdaftar untuk SPBJ ini.</p>
+            ) : (
+              <div className="space-y-2 text-xs">
+                {matchedMdu.map((m) => (
+                  <div key={m.id} className="p-3 bg-slate-950/70 border border-slate-800 rounded-xl flex items-center justify-between">
+                    <div>
+                      <div className="font-bold text-white text-xs">{m.material}</div>
+                      <div className="text-[10px] text-slate-400 mt-0.5">Kategori: {m.category}</div>
+                    </div>
+                    <div className="text-right font-mono font-bold text-amber-400 text-xs">
+                      {m.quantity} {m.unit}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-lg space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+              <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                <Box className="w-4 h-4 text-blue-400" />
+                Material Non-MDU ({matchedNonMdu.length} Item)
+              </h3>
+            </div>
+            {matchedNonMdu.length === 0 ? (
+              <p className="text-xs text-slate-500 italic py-4 text-center">Belum ada material Non-MDU terdaftar untuk SPBJ ini.</p>
+            ) : (
+              <div className="space-y-2 text-xs">
+                {matchedNonMdu.map((m) => (
+                  <div key={m.id} className="p-3 bg-slate-950/70 border border-slate-800 rounded-xl flex items-center justify-between">
+                    <div>
+                      <div className="font-bold text-white text-xs">{m.material}</div>
+                      <div className="text-[10px] text-slate-400 mt-0.5">Kategori: {m.category}</div>
+                    </div>
+                    <div className="text-right font-mono font-bold text-blue-400 text-xs">
+                      {m.quantity} {m.unit}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* TAB CONTENT: MATERIAL BONGKAR */}
+      {activeSummaryTab === 'bongkar' && (
+        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-lg space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+            <h3 className="text-sm font-bold text-white flex items-center gap-2">
+              <Package className="w-4 h-4 text-purple-400" />
+              Material Bongkar Gudang / Site ({matchedBongkar.length} Item)
+            </h3>
+          </div>
+          {matchedBongkar.length === 0 ? (
+            <p className="text-xs text-slate-500 italic py-4 text-center">Belum ada material bongkar tercatat untuk SPBJ ini.</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs text-slate-300">
+                <thead className="bg-slate-950 text-slate-400 font-semibold uppercase text-[10px] tracking-wider border-b border-slate-800">
+                  <tr>
+                    <th className="py-2.5 px-3">Kode</th>
+                    <th className="py-2.5 px-3">Nama Material Bongkar</th>
+                    <th className="py-2.5 px-3">Kategori</th>
+                    <th className="py-2.5 px-3 text-right">Vol</th>
+                    <th className="py-2.5 px-3">Kondisi</th>
+                    <th className="py-2.5 px-3">Lokasi Gudang</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-800/60 font-medium">
+                  {matchedBongkar.map((b) => (
+                    <tr key={b.id} className="hover:bg-slate-800/40">
+                      <td className="py-2.5 px-3 font-mono text-amber-400">{b.itemCode}</td>
+                      <td className="py-2.5 px-3 font-bold text-white">{b.materialName}</td>
+                      <td className="py-2.5 px-3 text-slate-300">{b.category}</td>
+                      <td className="py-2.5 px-3 text-right font-mono font-bold text-emerald-400">{b.volumeBongkar} {b.unit}</td>
+                      <td className="py-2.5 px-3">
+                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                          {b.condition}
+                        </span>
+                      </td>
+                      <td className="py-2.5 px-3 text-slate-300">{b.warehouseLocation}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* TAB CONTENT: ALAT KERJA */}
+      {activeSummaryTab === 'alat' && (
+        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-lg space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+            <h3 className="text-sm font-bold text-white flex items-center gap-2">
+              <Activity className="w-4 h-4 text-amber-400" />
+              Alat Kerja & Kalibrasi ({matchedEquipment.length} Alat)
+            </h3>
+          </div>
+          {matchedEquipment.length === 0 ? (
+            <p className="text-xs text-slate-500 italic py-4 text-center">Belum ada alat kerja teralokasi khusus untuk SPBJ ini.</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs text-slate-300">
+                <thead className="bg-slate-950 text-slate-400 font-semibold uppercase text-[10px] tracking-wider border-b border-slate-800">
+                  <tr>
+                    <th className="py-2.5 px-3">ID Alat</th>
+                    <th className="py-2.5 px-3">Nama & Brand</th>
+                    <th className="py-2.5 px-3">No. Seri</th>
+                    <th className="py-2.5 px-3">Status</th>
+                    <th className="py-2.5 px-3">Kalibrasi Terakhir</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-800/60 font-medium">
+                  {matchedEquipment.map((eq) => (
+                    <tr key={eq.id} className="hover:bg-slate-800/40">
+                      <td className="py-2.5 px-3 font-mono text-amber-400 font-bold">{eq.code}</td>
+                      <td className="py-2.5 px-3 font-bold text-white">{eq.name} <span className="block text-[10px] text-slate-400 font-normal">{eq.category}</span></td>
+                      <td className="py-2.5 px-3 font-mono text-slate-300">{eq.serialNumber}</td>
+                      <td className="py-2.5 px-3">
+                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                          {eq.status}
+                        </span>
+                      </td>
+                      <td className="py-2.5 px-3 font-mono text-slate-300">{eq.lastCalibrated}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* TAB CONTENT: TIMELINE PEKERJAAN */}
+      {activeSummaryTab === 'timeline' && (
+        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-lg space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+            <h3 className="text-sm font-bold text-white flex items-center gap-2">
+              <Calendar className="w-4 h-4 text-blue-400" />
+              Timeline & Jadwal Rencana Pekerjaan ({matchedTasks.length} Agenda)
+            </h3>
+          </div>
+          {matchedTasks.length === 0 ? (
+            <p className="text-xs text-slate-500 italic py-4 text-center">Belum ada agenda timeline pekerjaan terjadwal untuk SPBJ ini.</p>
+          ) : (
+            <div className="space-y-2 text-xs">
+              {matchedTasks.map((t) => (
+                <div key={t.id} className="p-3 bg-slate-950/70 border border-slate-800 rounded-xl flex items-center justify-between gap-3">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                        {t.priority}
+                      </span>
+                      <span className="font-bold text-white text-xs">{t.taskTitle}</span>
+                    </div>
+                    <div className="text-[11px] text-slate-400 mt-1">Lokasi: {t.locationDetails || 'Site Proyek'} | Target: {t.dueDate}</div>
+                  </div>
+                  <div className="text-right shrink-0">
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                      {t.status}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* TAB CONTENT: TAGGING LOKASI */}
+      {activeSummaryTab === 'tagging' && (
+        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-lg space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+            <h3 className="text-sm font-bold text-white flex items-center gap-2">
+              <MapPin className="w-4 h-4 text-rose-400" />
+              Tagging Lokasi GPS & Gardu / Tiang ({matchedLocationTags.length} Titik)
+            </h3>
+          </div>
+          {matchedLocationTags.length === 0 ? (
+            <p className="text-xs text-slate-500 italic py-4 text-center">Belum ada titik tagging koordinat GPS terdaftar untuk SPBJ ini.</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs text-slate-300">
+                <thead className="bg-slate-950 text-slate-400 font-semibold uppercase text-[10px] tracking-wider border-b border-slate-800">
+                  <tr>
+                    <th className="py-2.5 px-3">Nama Titik / Tiang / Gardu</th>
+                    <th className="py-2.5 px-3">Tipe</th>
+                    <th className="py-2.5 px-3">Koordinat (Lat, Lng)</th>
+                    <th className="py-2.5 px-3">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-800/60 font-medium">
+                  {matchedLocationTags.map((l) => (
+                    <tr key={l.id} className="hover:bg-slate-800/40">
+                      <td className="py-2.5 px-3 font-bold text-white">{l.name}</td>
+                      <td className="py-2.5 px-3 text-amber-400">{l.type}</td>
+                      <td className="py-2.5 px-3 font-mono text-emerald-400">{l.lat.toFixed(6)}, {l.lng.toFixed(6)}</td>
+                      <td className="py-2.5 px-3">
+                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                          {l.status}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* TAB CONTENT: MONITORING APD */}
+      {activeSummaryTab === 'apd' && (
+        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-lg space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+            <h3 className="text-sm font-bold text-white flex items-center gap-2">
+              <HardHat className="w-4 h-4 text-amber-400" />
+              Monitoring APD (Alat Pelindung Diri) Personil ({matchedWorkers.length} Pekerja)
+            </h3>
+          </div>
+          {matchedWorkers.length === 0 ? (
+            <p className="text-xs text-slate-500 italic py-4 text-center">Belum ada data pekerja & APD tercatat untuk SPBJ ini.</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs text-slate-300">
+                <thead className="bg-slate-950 text-slate-400 font-semibold uppercase text-[10px] tracking-wider border-b border-slate-800">
+                  <tr>
+                    <th className="py-2.5 px-3">Nama Pekerja</th>
+                    <th className="py-2.5 px-3">Posisi / Keahlian</th>
+                    <th className="py-2.5 px-3 text-center">Sertifikasi K3</th>
+                    <th className="py-2.5 px-3 text-center">Status APD K3</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-800/60 font-medium">
+                  {matchedWorkers.map((w) => (
+                    <tr key={w.id} className="hover:bg-slate-800/40">
+                      <td className="py-2.5 px-3 font-bold text-white">{w.name} <span className="block text-[10px] text-slate-400 font-mono">NIP: {w.nip}</span></td>
+                      <td className="py-2.5 px-3 text-amber-400">{w.role}</td>
+                      <td className="py-2.5 px-3 text-center font-mono text-slate-300">{w.certification}</td>
+                      <td className="py-2.5 px-3 text-center">
+                        <span className={`px-2.5 py-1 rounded text-[10px] font-bold ${
+                          w.ppeVerified ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'
+                        }`}>
+                          {w.ppeVerified ? '✓ APD Lengkap Terverifikasi' : 'Belum Terverifikasi'}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       )}
     </div>

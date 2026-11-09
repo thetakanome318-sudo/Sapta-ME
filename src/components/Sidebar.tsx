@@ -70,15 +70,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   };
 
   const navItems = [
-    { 
-      id: 'spbj', 
-      label: 'Daftar & Rangkuman SPBJ', 
-      icon: FileText,
-      subItems: [
-        { id: 'spbj-list', label: 'Daftar SPBJ Kontrak', icon: FileText },
-        { id: 'spbj-summary', label: 'Rangkuman 360° per SPBJ', icon: Layers }
-      ]
-    },
+    { id: 'spbj-list', label: 'Daftar SPBJ Kontrak', icon: FileText },
     { id: 'boq', label: 'Bill of Quantities (BOQ)', icon: FileSpreadsheet },
     { id: 'mandor', label: 'Database Mandor', icon: Users },
     { 

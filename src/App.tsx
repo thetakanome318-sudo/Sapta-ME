@@ -19,7 +19,7 @@ import {
   INITIAL_LOGISTICS_LABOR_COSTS,
   INITIAL_MANPOWER_RECORDS
 } from './data/mockData';
-import { Project, Worker, TaskAssignment, Equipment, AttendanceRecord, Mandor, SpbjContract, MaterialSummaryItem, UserAccount, BoqItem, MaterialBongkarItem, VehicleCompany, VehicleLease, EmergencyWork, BopItem, LogisticsLaborCost, ManpowerRecord } from './types';
+import { Project, Worker, TaskAssignment, Equipment, AttendanceRecord, Mandor, SpbjContract, MaterialSummaryItem, UserAccount, BoqItem, MaterialBongkarItem, VehicleCompany, VehicleLease, EmergencyWork, BopItem, LogisticsLaborCost, ManpowerRecord, LocationTag } from './types';
 import { testFirestoreConnection } from './firebase';
 import {
   subscribeSpbjContracts,
@@ -49,7 +49,8 @@ import {
   deleteLogisticsLaborCost,
   subscribeManpowerRecords,
   upsertManpowerRecord,
-  deleteManpowerRecord
+  deleteManpowerRecord,
+  subscribeLocationTags
 } from './services/firestoreSync';
 
 import { Sidebar } from './components/Sidebar';
@@ -115,6 +116,7 @@ export default function App() {
   const [bopItems, setBopItems] = useState<BopItem[]>(INITIAL_BOP_ITEMS);
   const [logisticsLaborCosts, setLogisticsLaborCosts] = useState<LogisticsLaborCost[]>(INITIAL_LOGISTICS_LABOR_COSTS);
   const [manpowerRecords, setManpowerRecords] = useState<ManpowerRecord[]>(INITIAL_MANPOWER_RECORDS);
+  const [locationTags, setLocationTags] = useState<LocationTag[]>([]);
   const [selectedSummarySpbjId, setSelectedSummarySpbjId] = useState<string>('');
 
   // Modals State
@@ -184,6 +186,10 @@ export default function App() {
       if (data && data.length > 0) setManpowerRecords(data);
     });
 
+    const unsubTags = subscribeLocationTags((data) => {
+      if (data && data.length > 0) setLocationTags(data);
+    });
+
     return () => {
       unsubSpbj();
       unsubBoq();
@@ -197,6 +203,7 @@ export default function App() {
       unsubWageAdvances();
       unsubCosts();
       unsubManpower();
+      unsubTags();
     };
   }, []);
 
@@ -534,6 +541,20 @@ export default function App() {
               onUpdateSpbjEndDate={handleUpdateSpbjEndDate}
               activeTab={activeTab}
               setActiveTab={setActiveTab}
+              boqItems={boqItems}
+              mandors={mandors}
+              manpowerList={manpowerRecords}
+              logisticsLaborCosts={logisticsLaborCosts}
+              bopItems={bopItems}
+              leaseVehicles={leaseVehicles}
+              emergencyWorks={emergencyWorks}
+              materialBongkarItems={materialBongkarItems}
+              mduMaterials={mduMaterials}
+              nonMduMaterials={nonMduMaterials}
+              equipment={equipment}
+              tasks={tasks}
+              locationTags={locationTags}
+              workers={workers}
               onOpenSummary={(spbjId) => {
                 setSelectedSummarySpbjId(spbjId);
                 setActiveTab('spbj-summary');
@@ -555,6 +576,10 @@ export default function App() {
               materialBongkarItems={materialBongkarItems}
               mduMaterials={mduMaterials}
               nonMduMaterials={nonMduMaterials}
+              equipment={equipment}
+              tasks={tasks}
+              locationTags={locationTags}
+              workers={workers}
               setActiveTab={setActiveTab}
             />
           )}
