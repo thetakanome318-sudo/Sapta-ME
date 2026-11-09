@@ -31,14 +31,23 @@ export interface AppMenuOption {
 }
 
 export const APP_MENUS: AppMenuOption[] = [
-  { id: 'spbj', label: 'Daftar SPBJ', category: 'Kontrak & Dokumen', description: 'Surat perjanjian pengadaan barang jasa & masa berlaku kontrak PLN' },
+  { id: 'spbj', label: 'Daftar & Rangkuman SPBJ', category: 'Kontrak & Dokumen', description: 'Surat perjanjian pengadaan barang jasa & konsolidasi 360° per SPBJ' },
+  { id: 'spbj-list', label: 'SPBJ - Daftar Kontrak', category: 'Kontrak & Dokumen', description: 'Daftar surat perjanjian pengadaan barang jasa & tanggal berakhir' },
+  { id: 'spbj-summary', label: 'SPBJ - Rangkuman 360°', category: 'Kontrak & Dokumen', description: 'Rangkuman lengkap terintegrasi dari seluruh menu dalam 1 SPBJ' },
   { id: 'boq', label: 'Bill of Quantities (BOQ)', category: 'Kontrak & Dokumen', description: 'RAB dan rincian volume serta harga satuan pekerjaan' },
   { id: 'mandor', label: 'Mandor Pekerjaan', category: 'Operasional Lapangan', description: 'Data mandor, daftar manpower, dan pemetaan multi-lokasi' },
+  { id: 'bop', label: 'BOP (Biaya Operasional)', category: 'Keuangan & Logistik', description: 'Menu Utama Biaya Operasional Proyek' },
+  { id: 'bop-angkutan', label: 'BOP - Angkutan', category: 'Keuangan & Logistik', description: 'Biaya angkut logistik, mobilisasi trafo, tiang & sewa crane' },
+  { id: 'bop-buruh', label: 'BOP - Buruh', category: 'Keuangan & Logistik', description: 'Upah buruh kasar, gali lubang tiang, lembur & harian' },
+  { id: 'wage-advance', label: 'BOP - Panjar Mandor', category: 'Keuangan & Logistik', description: 'Uang muka / panjar kasbon mandor per SPBJ' },
+  { id: 'bop-operasional', label: 'BOP - Operasional', category: 'Keuangan & Logistik', description: 'Biaya operasional kas kecil, BBM, mess & perizinan lapangan' },
+  { id: 'bop-sewa-mobil', label: 'BOP - Sewa Mobil', category: 'Keuangan & Logistik', description: 'Kontrak sewa rental mobil Hilux 4x4, truk crane & kendaraan site' },
   { id: 'monitoring-pekerjaan', label: 'Monitoring Pekerjaan', category: 'Operasional Lapangan', description: 'Realisasi progres, tagging lokasi, timeline, alat kerja, APD & material' },
+  { id: 'monitoring-manpower', label: 'Daftar Man Power & KTP', category: 'Operasional Lapangan', description: 'Database tenaga kerja, input nama pekerja dan kelengkapan foto KTP' },
   { id: 'emergency-work', label: 'Pekerjaan Emergency', category: 'Operasional Lapangan', description: 'Pekerjaan perbaikan tanggap darurat trafo & gangguan jaringan ME' },
-  { id: 'monitoring-kendaraan', label: 'Monitoring Kendaraan', category: 'Logistik & Armada', description: 'Kendaraan operasional perusahaan & kontrak sewa armada lapangan' },
-  { id: 'logistics-labor', label: 'Biaya Angkutan & Buruh', category: 'Keuangan & Logistik', description: 'Catatan biaya angkut logistik & upah buruh lapangan' },
-  { id: 'bop', label: 'Biaya Operasional (BOP)', category: 'Keuangan & Logistik', description: 'Voucher biaya operasional proyek & kas kecil lapangan' },
+  { id: 'rehap-work', label: 'Pekerjaan Rehap', category: 'Operasional Lapangan', description: 'Pemeliharaan dan rehabilitasi jaringan distribusi' },
+  { id: 'pohon-tumbang', label: 'Pohon Tumbang', category: 'Operasional Lapangan', description: 'Penanganan insiden pohon tumbang menimpa jaringan PLN' },
+  { id: 'other-work', label: 'Pekerjaan Lain', category: 'Operasional Lapangan', description: 'Pekerjaan khusus dan insiden lapangan lainnya' },
   { id: 'warehouse', label: 'Gudang / Stock', category: 'Logistik & Armada', description: 'Manajemen persediaan barang gudang Ambon & Tual' },
   { id: 'presentation', label: 'Presentasi Deck', category: 'Laporan & Eksekutif', description: 'Slide presentasi laporan eksekutif dan progres kerja' },
   { id: 'whatsapp-report', label: 'Pelaporan WhatsApp', category: 'Laporan & Eksekutif', description: 'Generator format pelaporan cepat ke grup WhatsApp pengawas' },
@@ -47,11 +56,11 @@ export const APP_MENUS: AppMenuOption[] = [
 
 export const ROLE_PRESETS: Record<string, string[]> = {
   'Admin': APP_MENUS.map(m => m.id),
-  'Project Manager': ['spbj', 'boq', 'mandor', 'monitoring-pekerjaan', 'emergency-work', 'monitoring-kendaraan', 'logistics-labor', 'bop', 'presentation', 'whatsapp-report'],
-  'Supervisor ME': ['spbj', 'mandor', 'monitoring-pekerjaan', 'emergency-work', 'monitoring-kendaraan', 'whatsapp-report'],
-  'Teknisi': ['mandor', 'monitoring-pekerjaan', 'emergency-work', 'whatsapp-report'],
-  'Gudang': ['monitoring-kendaraan', 'logistics-labor', 'warehouse', 'whatsapp-report'],
-  'Finance & BOP': ['spbj', 'boq', 'logistics-labor', 'bop', 'presentation'],
+  'Project Manager': ['spbj', 'spbj-list', 'spbj-summary', 'boq', 'mandor', 'bop', 'bop-angkutan', 'bop-buruh', 'wage-advance', 'bop-operasional', 'bop-sewa-mobil', 'monitoring-pekerjaan', 'emergency-work', 'rehap-work', 'pohon-tumbang', 'other-work', 'presentation', 'whatsapp-report'],
+  'Supervisor ME': ['spbj', 'spbj-list', 'spbj-summary', 'mandor', 'bop', 'bop-angkutan', 'bop-buruh', 'wage-advance', 'bop-operasional', 'bop-sewa-mobil', 'monitoring-pekerjaan', 'emergency-work', 'rehap-work', 'pohon-tumbang', 'other-work', 'whatsapp-report'],
+  'Teknisi': ['mandor', 'monitoring-pekerjaan', 'emergency-work', 'rehap-work', 'pohon-tumbang', 'other-work', 'whatsapp-report'],
+  'Gudang': ['bop', 'bop-angkutan', 'bop-buruh', 'bop-sewa-mobil', 'warehouse', 'whatsapp-report'],
+  'Finance & BOP': ['spbj', 'spbj-list', 'spbj-summary', 'boq', 'bop', 'bop-angkutan', 'bop-buruh', 'wage-advance', 'bop-operasional', 'bop-sewa-mobil', 'presentation'],
 };
 
 interface MasterDataViewProps {

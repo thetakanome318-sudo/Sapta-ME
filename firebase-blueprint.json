@@ -210,6 +210,48 @@
         "notes": { "type": "string" }
       },
       "required": ["id", "spbjId", "mandorName", "amount", "date", "status"]
+    },
+    "LogisticsLaborCost": {
+      "title": "LogisticsLaborCost",
+      "description": "Logistics transport and field labor cost records",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "type": { "type": "string" },
+        "category": { "type": "string" },
+        "description": { "type": "string" },
+        "projectName": { "type": "string" },
+        "spbjId": { "type": "string" },
+        "amount": { "type": "number" },
+        "date": { "type": "string" },
+        "submittedBy": { "type": "string" },
+        "status": { "type": "string" },
+        "receiptPhotoUrl": { "type": "string" },
+        "notes": { "type": "string" }
+      },
+      "required": ["id", "type", "description", "amount", "date", "status"]
+    },
+    "ManpowerRecord": {
+      "title": "ManpowerRecord",
+      "description": "Field worker personnel and identity KTP record",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "ktpNumber": { "type": "string" },
+        "ktpPhotoUrl": { "type": "string" },
+        "mandorId": { "type": "string" },
+        "mandorName": { "type": "string" },
+        "spbjId": { "type": "string" },
+        "projectName": { "type": "string" },
+        "role": { "type": "string" },
+        "phone": { "type": "string" },
+        "address": { "type": "string" },
+        "status": { "type": "string" },
+        "joinDate": { "type": "string" },
+        "notes": { "type": "string" }
+      },
+      "required": ["id", "name", "role", "status"]
     }
   },
   "firestore": {
@@ -260,6 +302,14 @@
     "/wageAdvances/{advanceId}": {
       "schema": "WageAdvance",
       "description": "Mandor wage advance records"
+    },
+    "/logisticsLaborCosts/{costId}": {
+      "schema": "LogisticsLaborCost",
+      "description": "Logistics and labor cost records"
+    },
+    "/manpowerRecords/{manpowerId}": {
+      "schema": "ManpowerRecord",
+      "description": "Manpower workforce personnel and KTP identity records"
     }
   }
 }

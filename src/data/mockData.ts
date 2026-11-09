@@ -1,4 +1,4 @@
-import { Worker, Project, TaskAssignment, Equipment, AttendanceRecord, Mandor, SpbjContract, MaterialSummaryItem, UserAccount, BoqItem, MaterialBongkarItem, VehicleCompany, VehicleLease, EmergencyWork, BopItem } from '../types';
+import { Worker, Project, TaskAssignment, Equipment, AttendanceRecord, Mandor, SpbjContract, MaterialSummaryItem, UserAccount, BoqItem, MaterialBongkarItem, VehicleCompany, VehicleLease, EmergencyWork, BopItem, WageAdvance, LogisticsLaborCost, ManpowerRecord } from '../types';
 
 export const INITIAL_SPBJ_CONTRACTS: SpbjContract[] = [
   {
@@ -589,7 +589,7 @@ export const INITIAL_USERS: UserAccount[] = [
     email: 'admin.me@sapta.co.id',
     department: 'Direksi & Manajemen ME',
     status: 'Aktif',
-    allowedMenus: ['spbj', 'boq', 'mandor', 'wage-advance', 'monitoring-pekerjaan', 'emergency-management', 'monitoring-kendaraan', 'logistics-labor', 'bop', 'warehouse', 'presentation', 'whatsapp-report', 'master-data']
+    allowedMenus: ['spbj', 'spbj-list', 'spbj-summary', 'boq', 'mandor', 'bop', 'bop-angkutan', 'bop-buruh', 'wage-advance', 'bop-operasional', 'bop-sewa-mobil', 'bop-management', 'logistics-labor', 'monitoring-pekerjaan', 'emergency-management', 'monitoring-kendaraan', 'warehouse', 'presentation', 'whatsapp-report', 'master-data']
   },
   { 
     id: 'USR-02', 
@@ -601,7 +601,7 @@ export const INITIAL_USERS: UserAccount[] = [
     email: 'budi.santoso@sapta.co.id',
     department: 'Divisi Operasional & Proyek',
     status: 'Aktif',
-    allowedMenus: ['spbj', 'boq', 'mandor', 'wage-advance', 'monitoring-pekerjaan', 'emergency-management', 'monitoring-kendaraan', 'logistics-labor', 'bop', 'presentation', 'whatsapp-report']
+    allowedMenus: ['spbj', 'spbj-list', 'spbj-summary', 'boq', 'mandor', 'bop', 'bop-angkutan', 'bop-buruh', 'wage-advance', 'bop-operasional', 'bop-sewa-mobil', 'bop-management', 'logistics-labor', 'monitoring-pekerjaan', 'emergency-management', 'monitoring-kendaraan', 'presentation', 'whatsapp-report']
   },
   { 
     id: 'USR-03', 
@@ -1007,7 +1007,182 @@ export const INITIAL_WAGE_ADVANCES: WageAdvance[] = [
   }
 ];
 
+export const INITIAL_LOGISTICS_LABOR_COSTS: LogisticsLaborCost[] = [
+  { 
+    id: 'EXP-001', 
+    type: 'Angkutan', 
+    category: 'Sewa Crane & Mobilisasi Trafo', 
+    description: 'Sewa Crane 25 Ton - Mobilisasi Trafo Distribusi 50kVA', 
+    projectName: 'PEMBANGUNAN DAN PEMASANGAN JARINGAN DISTRIBUSI LISDES - Lokasi Desa Tamangil UP3 Tual', 
+    spbjId: 'SPBJ-001', 
+    amount: 12500000, 
+    date: '2026-11-04', 
+    submittedBy: 'Bapak Karmin Suhartono (Mandor)',
+    status: 'Paid',
+    notes: 'Mobilisasi lancar tanpa kendala teknis'
+  },
+  { 
+    id: 'EXP-002', 
+    type: 'Buruh', 
+    category: 'Lembur Tim Lapangan', 
+    description: 'Upah Lembur Tim Terminasi & Jointing 20kV (4 Org x 2 Hari)', 
+    projectName: 'PEMBANGUNAN DAN PEMASANGAN JARINGAN DISTRIBUSI LISDES - Lokasi Desa Hoko UP3 Tual', 
+    spbjId: 'SPBJ-002', 
+    amount: 2400000, 
+    date: '2026-11-05', 
+    submittedBy: 'Bapak Wawan Kurnia (Mandor)',
+    status: 'Approved',
+    notes: 'Pekerjaan selesai sesuai SOP K3'
+  },
+  { 
+    id: 'EXP-003', 
+    type: 'Angkutan', 
+    category: 'Angkutan Tiang & Kabel', 
+    description: 'Angkutan Tiang Besi 12m (3 Rit Truk Tronton)', 
+    projectName: 'PEMBANGUNAN DAN PEMASANGAN JARINGAN DISTRIBUSI LISDES - Lokasi Desa Hoko UP3 Tual', 
+    spbjId: 'SPBJ-002', 
+    amount: 4500000, 
+    date: '2026-11-02', 
+    submittedBy: 'Logistik Site Tual',
+    status: 'Paid',
+    notes: 'Kuitansi vendor CV Seram Transport'
+  },
+  { 
+    id: 'EXP-004', 
+    type: 'Buruh', 
+    category: 'Gali Lubang Tiang', 
+    description: 'Biaya Buruh Kasar Gali Lubang Tiang 38 Titik Tanah Keras', 
+    projectName: 'PEMBANGUNAN DAN PEMASANGAN JARINGAN DISTRIBUSI LISDES - Lokasi Desa Tamangil UP3 Tual', 
+    spbjId: 'SPBJ-001', 
+    amount: 8750000, 
+    date: '2026-11-03', 
+    submittedBy: 'Bapak Karmin Suhartono (Mandor)',
+    status: 'Pending',
+    notes: 'Menunggu verifikasi lapangan PM'
+  },
+  { 
+    id: 'EXP-005', 
+    type: 'Angkutan', 
+    category: 'Langsir Material Site', 
+    description: 'Langsir Dump Truck Pasir Urug Pondasi Gardu Portal', 
+    projectName: 'PEMBANGUNAN DAN PEMASANGAN JARINGAN DISTRIBUSI LISDES - Lokasi Desa Ngurko UP3 Tual', 
+    spbjId: 'SPBJ-003', 
+    amount: 3200000, 
+    date: '2026-11-06', 
+    submittedBy: 'Bapak Zaenal Arifin (Mandor)',
+    status: 'Approved',
+    notes: 'Material sudah tiba di site'
+  },
+  { 
+    id: 'EXP-006', 
+    type: 'Buruh', 
+    category: 'Upah Buruh Langsir', 
+    description: 'Upah 6 Buruh Langsir Tiang Beton Jalur Rawa & Pasang Pondasi', 
+    projectName: 'PEMBANGUNAN DAN PEMASANGAN JARINGAN DISTRIBUSI LISDES - Lokasi Desa Letvuan & Kolser UP3 Tual', 
+    spbjId: 'SPBJ-004', 
+    amount: 4200000, 
+    date: '2026-11-07', 
+    submittedBy: 'Tim Lapangan Letvuan',
+    status: 'Pending',
+    notes: 'Pekerjaan langsir sedang berlangsung'
+  }
+];
 
-
-
-
+export const INITIAL_MANPOWER_RECORDS: ManpowerRecord[] = [
+  {
+    id: 'MP-001',
+    name: 'Yohanes Rumalutur',
+    ktpNumber: '8172011204940003',
+    ktpPhotoUrl: 'https://images.unsplash.com/photo-1544717305-2782549b5136?w=600&auto=format&fit=crop&q=80',
+    mandorId: 'MND-01',
+    mandorName: 'Bapak Karmin Suhartono',
+    spbjId: 'SPBJ-001',
+    projectName: 'PEMBANGUNAN DAN PEMASANGAN JARINGAN DISTRIBUSI LISDES - Desa Tamangil',
+    role: 'Lineman / Teknisi Penarikan Kabel',
+    phone: '0812-4781-9921',
+    address: 'Desa Tamangil, Kec. Pulau Dullah, Kota Tual',
+    status: 'Aktif On-Site',
+    joinDate: '2026-08-20',
+    notes: 'Bersertifikat K3 Bekerja di Ketinggian (TKPK 1) & APD Lengkap'
+  },
+  {
+    id: 'MP-002',
+    name: 'Dominggus Silooy',
+    ktpNumber: '8172021508890001',
+    ktpPhotoUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&auto=format&fit=crop&q=80',
+    mandorId: 'MND-01',
+    mandorName: 'Bapak Karmin Suhartono',
+    spbjId: 'SPBJ-001',
+    projectName: 'PEMBANGUNAN DAN PEMASANGAN JARINGAN DISTRIBUSI LISDES - Desa Tamangil',
+    role: 'Jointer & Terminasi Kabel 20kV',
+    phone: '0813-9920-1144',
+    address: 'Dusun Dumar, Kei Kecil, Maluku Tenggara',
+    status: 'Aktif On-Site',
+    joinDate: '2026-08-22',
+    notes: 'Spesialis jointing kabel N2XSY & terminasi kubikel'
+  },
+  {
+    id: 'MP-003',
+    name: 'Bahrudin Rengur',
+    ktpNumber: '8172030911950005',
+    ktpPhotoUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=600&auto=format&fit=crop&q=80',
+    mandorId: 'MND-02',
+    mandorName: 'Bapak Wawan Kurnia',
+    spbjId: 'SPBJ-002',
+    projectName: 'PEMBANGUNAN DAN PEMASANGAN JARINGAN DISTRIBUSI LISDES - Desa Hoko',
+    role: 'Tim Gali Lubang Tiang & Cor Pondasi',
+    phone: '0852-7711-3320',
+    address: 'Desa Hoko, Kei Besar, Maluku Tenggara',
+    status: 'Aktif On-Site',
+    joinDate: '2026-09-01',
+    notes: 'Tim galian tanah keras & pondasi tiang besi 12m'
+  },
+  {
+    id: 'MP-004',
+    name: 'Fransiscus Rahabav',
+    ktpNumber: '8172012702920002',
+    ktpPhotoUrl: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=600&auto=format&fit=crop&q=80',
+    mandorId: 'MND-02',
+    mandorName: 'Bapak Wawan Kurnia',
+    spbjId: 'SPBJ-002',
+    projectName: 'PEMBANGUNAN DAN PEMASANGAN JARINGAN DISTRIBUSI LISDES - Desa Hoko',
+    role: 'Erector Tiang & Travers',
+    phone: '0812-6633-8899',
+    address: 'Desa Danar Ternate, Maluku Tenggara',
+    status: 'Aktif On-Site',
+    joinDate: '2026-09-02',
+    notes: 'Pengalaman ereksi tiang beton & pemasangan cross arm'
+  },
+  {
+    id: 'MP-005',
+    name: 'Abdul Gani Matdoan',
+    ktpNumber: '8172041806980007',
+    ktpPhotoUrl: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=600&auto=format&fit=crop&q=80',
+    mandorId: 'MND-03',
+    mandorName: 'Bapak Zaenal Arifin',
+    spbjId: 'SPBJ-003',
+    projectName: 'PEMBANGUNAN DAN PEMASANGAN JARINGAN DISTRIBUSI LISDES - Desa Ngurko',
+    role: 'Helper & Langsir Material',
+    phone: '0821-4455-6677',
+    address: 'Desa Ngurko, Kei Besar Utara Timur',
+    status: 'Aktif On-Site',
+    joinDate: '2026-09-12',
+    notes: 'Tenaga angkut material & langsir jalur perbukitan'
+  },
+  {
+    id: 'MP-006',
+    name: 'Petrus Renyaan',
+    ktpNumber: '8172020405900004',
+    ktpPhotoUrl: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=600&auto=format&fit=crop&q=80',
+    mandorId: 'MND-03',
+    mandorName: 'Bapak Zaenal Arifin',
+    spbjId: 'SPBJ-003',
+    projectName: 'PEMBANGUNAN DAN PEMASANGAN JARINGAN DISTRIBUSI LISDES - Desa Ngurko',
+    role: 'Driver Truk Crane & Operasional',
+    phone: '0813-8822-1100',
+    address: 'Kota Tual, Maluku',
+    status: 'Standby',
+    joinDate: '2026-09-15',
+    notes: 'SIM B2 Umum aktif & SIO Crane Depnaker'
+  }
+];

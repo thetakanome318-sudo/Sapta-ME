@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
 import { VehicleLease, SpbjContract } from '../types';
-import { FileSpreadsheet, DollarSign, Calendar, Building2, MapPin, CheckCircle2, AlertTriangle, Clock, Plus, Search, Filter, Download, FileText } from 'lucide-react';
+import { FileSpreadsheet, DollarSign, Calendar, Building2, MapPin, CheckCircle2, AlertTriangle, Clock, Plus, Search, Filter, Download, FileText, Car } from 'lucide-react';
+import { BopSubmenuBar } from './BopSubmenuBar';
 
 interface VehicleLeaseViewProps {
   leases: VehicleLease[];
   spbjContracts: SpbjContract[];
   onAddLease: (lease: Omit<VehicleLease, 'id'>) => void;
   onUpdateLeaseStatus: (id: string, status: VehicleLease['status']) => void;
+  activeTab?: string;
+  setActiveTab?: (tab: string) => void;
+  isBopContext?: boolean;
 }
 
 const formatRupiah = (val: number) => {
@@ -22,6 +26,9 @@ export const VehicleLeaseView: React.FC<VehicleLeaseViewProps> = ({
   spbjContracts,
   onAddLease,
   onUpdateLeaseStatus,
+  activeTab,
+  setActiveTab,
+  isBopContext,
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
@@ -161,24 +168,35 @@ export const VehicleLeaseView: React.FC<VehicleLeaseViewProps> = ({
     }, 500);
   };
 
+  const showBopBar = isBopContext || (activeTab && (activeTab.startsWith('bop') || activeTab === 'wage-advance'));
+
   return (
     <div className="space-y-6">
+      {/* BOP Submenu Navigation Bar if accessed within BOP context */}
+      {showBopBar && activeTab && setActiveTab && (
+        <BopSubmenuBar activeTab={activeTab} setActiveTab={setActiveTab} />
+      )}
+
       {/* Header Banner */}
       <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-xl relative overflow-hidden">
         <div className="absolute right-0 top-0 bottom-0 opacity-10 pointer-events-none flex items-center pr-6">
-          <FileSpreadsheet className="w-64 h-64 text-blue-500" />
+          <FileSpreadsheet className="w-64 h-64 text-amber-500" />
         </div>
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-400 text-xs font-semibold mb-2">
-              <FileText className="w-3.5 h-3.5" />
-              Monitoring Kontrak Sewa Kendaraan
+            <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold mb-2 ${
+              showBopBar
+                ? 'bg-amber-500/10 border border-amber-500/30 text-amber-400'
+                : 'bg-blue-500/10 border border-blue-500/30 text-blue-400'
+            }`}>
+              {showBopBar ? <Car className="w-3.5 h-3.5" /> : <FileText className="w-3.5 h-3.5" />}
+              <span>{showBopBar ? 'BOP: Sewa Mobil & Kendaraan Operasional' : 'Monitoring Kontrak Sewa Kendaraan'}</span>
             </div>
             <h1 className="text-2xl font-bold text-white tracking-tight">
-              Kontrak Sewa Kendaraan Operasional
+              {showBopBar ? 'Sewa Mobil & Kendaraan Operasional' : 'Kontrak Sewa Kendaraan Operasional'}
             </h1>
             <p className="text-slate-400 text-sm mt-1 max-w-2xl">
-              Pengelolaan perikatan sewa rental armada kendaraan outdoor dengan vendor untuk dukungan proyek kelistrikan di site.
+              Pengelolaan perikatan sewa rental armada mobil Hilux 4x4, truk crane & kendaraan operasional site proyek per SPBJ.
             </p>
           </div>
           <div className="flex items-center gap-3">
@@ -527,7 +545,7 @@ export const VehicleLeaseView: React.FC<VehicleLeaseViewProps> = ({
                     <option value="">-- Pilih SPBJ Terhubung --</option>
                     {spbjContracts.map((s) => (
                       <option key={s.id} value={s.id}>
-                        {s.up3Name} - {s.spbjNumber.split('/')[0]}
+                        {s.id} · {s.spbjNumber} ({s.up3Name} - {s.projectName})
                       </option>
                     ))}
                   </select>

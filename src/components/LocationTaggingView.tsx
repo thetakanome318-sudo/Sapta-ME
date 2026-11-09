@@ -287,7 +287,7 @@ export const LocationTaggingView: React.FC = () => {
                   className="w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-[11px] font-bold appearance-none focus:ring-2 focus:ring-blue-500 outline-none cursor-pointer"
                 >
                   <option value="all">Target SPBJ Import</option>
-                  {spbjList.map(s => <option key={s.id} value={s.id}>{s.spbjNumber} - {s.projectName}</option>)}
+                  {spbjList.map(s => <option key={s.id} value={s.id}>{s.id} · {s.spbjNumber} ({s.up3Name} - {s.projectName})</option>)}
                 </select>
                 <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
                   <ChevronDown className="w-3.5 h-3.5 text-slate-400" />

@@ -67,6 +67,16 @@ service cloud.firestore {
       allow create, update, delete: if isValidId(advanceId);
     }
 
+    match /logisticsLaborCosts/{costId} {
+      allow get, list: if true;
+      allow create, update, delete: if isValidId(costId);
+    }
+
+    match /manpowerRecords/{manpowerId} {
+      allow get, list: if true;
+      allow create, update, delete: if isValidId(manpowerId);
+    }
+
     match /test/{docId} {
       allow read, write: if true;
     }

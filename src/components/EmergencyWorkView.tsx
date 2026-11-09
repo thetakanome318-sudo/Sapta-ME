@@ -472,7 +472,7 @@ export const EmergencyWorkView: React.FC<EmergencyWorkViewProps> = ({
                     <option value="">-- Tanpa SPBJ Specific --</option>
                     {spbjList.map((s) => (
                       <option key={s.id} value={s.id}>
-                        {s.up3Name} - {s.spbjNumber.split('/')[0]}
+                        {s.id} · {s.spbjNumber} ({s.up3Name} - {s.projectName})
                       </option>
                     ))}
                   </select>

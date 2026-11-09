@@ -328,7 +328,7 @@ export const MandorView: React.FC<MandorViewProps> = ({
                   >
                     {spbjList.map((s) => (
                       <option key={s.id} value={s.id}>
-                        {s.projectName} ({s.spbjNumber})
+                        {s.id} · {s.spbjNumber} ({s.up3Name} - {s.projectName})
                       </option>
                     ))}
                   </select>

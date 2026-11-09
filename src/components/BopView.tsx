@@ -21,11 +21,15 @@ import {
   UserCheck
 } from 'lucide-react';
 
+import { BopSubmenuBar } from './BopSubmenuBar';
+
 interface BopViewProps {
   bopItems: BopItem[];
   spbjList: SpbjContract[];
   onAddBopItem: (item: Omit<BopItem, 'id'>) => void;
   onUpdateBopStatus: (id: string, status: BopItem['status']) => void;
+  activeTab?: string;
+  setActiveTab?: (tab: string) => void;
 }
 
 const formatRupiah = (val: number) => {
@@ -41,6 +45,8 @@ export const BopView: React.FC<BopViewProps> = ({
   spbjList,
   onAddBopItem,
   onUpdateBopStatus,
+  activeTab = 'bop-operasional',
+  setActiveTab
 }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState<string>('ALL');
@@ -193,6 +199,14 @@ export const BopView: React.FC<BopViewProps> = ({
 
   return (
     <div className="space-y-6">
+      {/* BOP Submenu Bar Navigation */}
+      {setActiveTab && (
+        <BopSubmenuBar 
+          activeTab={activeTab} 
+          setActiveTab={setActiveTab} 
+        />
+      )}
+
       {/* Top Banner Header */}
       <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-xl relative overflow-hidden">
         <div className="absolute right-0 top-0 bottom-0 opacity-10 pointer-events-none flex items-center pr-6">
@@ -202,7 +216,7 @@ export const BopView: React.FC<BopViewProps> = ({
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-semibold mb-2">
               <DollarSign className="w-3.5 h-3.5" />
-              Manajemen Pengeluaran Kas Kecil & Operasional Lapangan
+              <span>BOP: Biaya Operasional (Kas Kecil)</span>
             </div>
             <h1 className="text-2xl font-bold text-white tracking-tight">
               Biaya Operasional Proyek (BOP)
@@ -314,7 +328,7 @@ export const BopView: React.FC<BopViewProps> = ({
             <option value="ALL">Semua SPBJ Proyek</option>
             {spbjList.map((s) => (
               <option key={s.id} value={s.id}>
-                {s.up3Name} - {s.spbjNumber.split('/')[0]}
+                {s.id} · {s.spbjNumber} ({s.up3Name} - {s.projectName})
               </option>
             ))}
           </select>
@@ -556,7 +570,7 @@ export const BopView: React.FC<BopViewProps> = ({
                   >
                     {spbjList.map((s) => (
                       <option key={s.id} value={s.id}>
-                        {s.up3Name} - {s.spbjNumber.split('/')[0]}
+                        {s.id} · {s.spbjNumber} ({s.up3Name} - {s.projectName})
                       </option>
                     ))}
                   </select>

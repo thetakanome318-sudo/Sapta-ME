@@ -135,7 +135,7 @@ export const NonMduMonitoringView: React.FC<NonMduMonitoringViewProps> = ({
           >
             <option value="all">Semua Kontrak SPBJ</option>
             {spbjList.map(s => (
-              <option key={s.id} value={s.id}>{s.spbjNumber} - {s.projectName.substring(0, 30)}...</option>
+              <option key={s.id} value={s.id}>{s.id} · {s.spbjNumber} ({s.up3Name} - {s.projectName})</option>
             ))}
           </select>
         </div>
@@ -204,7 +204,7 @@ export const NonMduMonitoringView: React.FC<NonMduMonitoringViewProps> = ({
                 onChange={(e) => setFormSpbjId(e.target.value)}
                 className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-xs"
               >
-                {spbjList.map(s => <option key={s.id} value={s.id}>{s.spbjNumber}</option>)}
+                {spbjList.map(s => <option key={s.id} value={s.id}>{s.id} · {s.spbjNumber} ({s.up3Name} - {s.projectName})</option>)}
               </select>
             </div>
           </div>

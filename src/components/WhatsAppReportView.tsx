@@ -297,7 +297,7 @@ export const WhatsAppReportView: React.FC<WhatsAppReportViewProps> = ({
               <option value="all">Semua Kontrak SPBJ</option>
               {spbjList.map((s) => (
                 <option key={s.id} value={s.id}>
-                  {s.spbjNumber} ({s.up3Name})
+                  {s.id} · {s.spbjNumber} ({s.up3Name} - {s.projectName})
                 </option>
               ))}
             </select>

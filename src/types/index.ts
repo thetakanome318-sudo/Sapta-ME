@@ -110,6 +110,23 @@ export interface Manpower {
   ktpNumber: string;
 }
 
+export interface ManpowerRecord {
+  id: string;
+  name: string; // Nama Man Power / Pekerja
+  ktpNumber?: string; // No KTP / NIK
+  ktpPhotoUrl?: string; // File KTP / Foto KTP yang di-upload
+  mandorId?: string; // Mandor Penanggung Jawab
+  mandorName?: string;
+  spbjId?: string; // SPBJ Penempatan
+  projectName?: string;
+  role: string; // Posisi / Keahlian
+  phone?: string;
+  address?: string;
+  status: 'Aktif On-Site' | 'Standby' | 'Non-Aktif';
+  joinDate?: string;
+  notes?: string;
+}
+
 export interface MandorLocation {
   id: string;
   locationName: string;
@@ -292,6 +309,21 @@ export interface WageAdvance {
   submittedBy: string;
   approvedBy?: string;
   status: 'Pending' | 'Approved' | 'Paid' | 'Rejected';
+  receiptPhotoUrl?: string;
+  notes?: string;
+}
+
+export interface LogisticsLaborCost {
+  id: string;
+  type: 'Angkutan' | 'Buruh';
+  category: string;
+  description: string;
+  projectName: string;
+  spbjId?: string;
+  amount: number;
+  date: string;
+  submittedBy?: string;
+  status: 'Approved' | 'Pending' | 'Paid';
   receiptPhotoUrl?: string;
   notes?: string;
 }

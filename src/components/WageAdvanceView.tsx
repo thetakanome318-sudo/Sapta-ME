@@ -17,12 +17,19 @@ import {
 } from 'lucide-react';
 import { WageAdvance, SpbjContract } from '../types';
 import { subscribeWageAdvances, upsertWageAdvance, deleteWageAdvance } from '../services/firestoreSync';
+import { BopSubmenuBar } from './BopSubmenuBar';
 
 interface WageAdvanceViewProps {
   spbjList: SpbjContract[];
+  activeTab?: string;
+  setActiveTab?: (tab: string) => void;
 }
 
-export const WageAdvanceView: React.FC<WageAdvanceViewProps> = ({ spbjList }) => {
+export const WageAdvanceView: React.FC<WageAdvanceViewProps> = ({ 
+  spbjList,
+  activeTab = 'wage-advance',
+  setActiveTab 
+}) => {
   const [advances, setWageAdvances] = useState<WageAdvance[]>([]);
   const [selectedSpbj, setSelectedSpbj] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -72,15 +79,26 @@ PT SAPTA MANUNGGAL KARYA
 
   return (
     <div className="space-y-6 pb-12">
+      {/* BOP Submenu Bar Navigation */}
+      {setActiveTab && (
+        <BopSubmenuBar 
+          activeTab={activeTab} 
+          setActiveTab={setActiveTab} 
+        />
+      )}
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold mb-2">
+            <Wallet className="w-3.5 h-3.5" />
+            <span>BOP: Panjar Mandor</span>
+          </div>
           <h2 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-            <Wallet className="w-6 h-6 text-emerald-500" />
-            <span>Panjar Upah (Wage Advance)</span>
+            <span>Panjar Mandor (Wage Advance)</span>
           </h2>
-          <p className="text-slate-500 text-sm mt-1 text-[11px]">
-            Manajemen panjar upah untuk mandor dan tim lapangan per SPBJ.
+          <p className="text-slate-500 text-sm mt-0.5 text-xs">
+            Manajemen uang muka dan panjar upah untuk mandor pekerjaan dan tim lapangan per SPBJ.
           </p>
         </div>
         <button 
@@ -167,7 +185,7 @@ PT SAPTA MANUNGGAL KARYA
           >
             <option value="all">Semua SPBJ</option>
             {spbjList.map(s => (
-              <option key={s.id} value={s.id}>{s.spbjNumber} - {s.projectName}</option>
+              <option key={s.id} value={s.id}>{s.id} · {s.spbjNumber} ({s.up3Name} - {s.projectName})</option>
             ))}
           </select>
         </div>
@@ -294,7 +312,7 @@ PT SAPTA MANUNGGAL KARYA
               <div>
                 <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Pilih SPBJ</label>
                 <select name="spbjId" required className="w-full bg-slate-50 dark:bg-slate-800 border-none rounded-lg p-2 text-sm outline-none focus:ring-1 focus:ring-blue-500">
-                  {spbjList.map(s => <option key={s.id} value={s.id}>{s.projectName}</option>)}
+                  {spbjList.map(s => <option key={s.id} value={s.id}>{s.id} · {s.spbjNumber} ({s.up3Name} - {s.projectName})</option>)}
                 </select>
               </div>
               <div>

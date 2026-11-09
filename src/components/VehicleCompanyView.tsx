@@ -386,7 +386,7 @@ export const VehicleCompanyView: React.FC<VehicleCompanyViewProps> = ({
                     <option value="">-- Tidak Terhubung SPBJ (Pool Umum) --</option>
                     {spbjContracts.map((s) => (
                       <option key={s.id} value={s.id}>
-                        {s.up3Name} - {s.spbjNumber.split('/')[0]}
+                        {s.id} · {s.spbjNumber} ({s.up3Name} - {s.projectName})
                       </option>
                     ))}
                   </select>

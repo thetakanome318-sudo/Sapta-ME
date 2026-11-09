@@ -15,9 +15,11 @@ import {
   INITIAL_VEHICLE_COMPANY,
   INITIAL_VEHICLE_LEASE,
   INITIAL_EMERGENCY_WORKS,
-  INITIAL_BOP_ITEMS
+  INITIAL_BOP_ITEMS,
+  INITIAL_LOGISTICS_LABOR_COSTS,
+  INITIAL_MANPOWER_RECORDS
 } from './data/mockData';
-import { Project, Worker, TaskAssignment, Equipment, AttendanceRecord, Mandor, SpbjContract, MaterialSummaryItem, UserAccount, BoqItem, MaterialBongkarItem, VehicleCompany, VehicleLease, EmergencyWork, BopItem } from './types';
+import { Project, Worker, TaskAssignment, Equipment, AttendanceRecord, Mandor, SpbjContract, MaterialSummaryItem, UserAccount, BoqItem, MaterialBongkarItem, VehicleCompany, VehicleLease, EmergencyWork, BopItem, LogisticsLaborCost, ManpowerRecord } from './types';
 import { testFirestoreConnection } from './firebase';
 import {
   subscribeSpbjContracts,
@@ -41,7 +43,13 @@ import {
   subscribeUsers,
   upsertUser,
   deleteUser,
-  subscribeWageAdvances
+  subscribeWageAdvances,
+  subscribeLogisticsLaborCosts,
+  upsertLogisticsLaborCost,
+  deleteLogisticsLaborCost,
+  subscribeManpowerRecords,
+  upsertManpowerRecord,
+  deleteManpowerRecord
 } from './services/firestoreSync';
 
 import { Sidebar } from './components/Sidebar';
@@ -74,6 +82,8 @@ import { WarehouseAmbonView } from './components/WarehouseAmbonView';
 import { WarehouseTualView } from './components/WarehouseTualView';
 import { WorkerDetailModal } from './components/WorkerDetailModal';
 import { CheckInModal } from './components/CheckInModal';
+import { ManpowerListView } from './components/ManpowerListView';
+import { SpbjSummaryView } from './components/SpbjSummaryView';
 
 import { LoginView } from './components/LoginView';
 import { WageAdvanceView } from './components/WageAdvanceView';
@@ -103,6 +113,9 @@ export default function App() {
   const [leaseVehicles, setLeaseVehicles] = useState<VehicleLease[]>(INITIAL_VEHICLE_LEASE);
   const [emergencyWorks, setEmergencyWorks] = useState<EmergencyWork[]>(INITIAL_EMERGENCY_WORKS);
   const [bopItems, setBopItems] = useState<BopItem[]>(INITIAL_BOP_ITEMS);
+  const [logisticsLaborCosts, setLogisticsLaborCosts] = useState<LogisticsLaborCost[]>(INITIAL_LOGISTICS_LABOR_COSTS);
+  const [manpowerRecords, setManpowerRecords] = useState<ManpowerRecord[]>(INITIAL_MANPOWER_RECORDS);
+  const [selectedSummarySpbjId, setSelectedSummarySpbjId] = useState<string>('');
 
   // Modals State
   const [selectedWorkerForModal, setSelectedWorkerForModal] = useState<Worker | null>(null);
@@ -163,6 +176,14 @@ export default function App() {
       // Potentially used for global totals if needed
     });
 
+    const unsubCosts = subscribeLogisticsLaborCosts((data) => {
+      if (data && data.length > 0) setLogisticsLaborCosts(data);
+    });
+
+    const unsubManpower = subscribeManpowerRecords((data) => {
+      if (data && data.length > 0) setManpowerRecords(data);
+    });
+
     return () => {
       unsubSpbj();
       unsubBoq();
@@ -174,6 +195,8 @@ export default function App() {
       unsubBongkar();
       unsubUsers();
       unsubWageAdvances();
+      unsubCosts();
+      unsubManpower();
     };
   }, []);
 
@@ -200,19 +223,68 @@ export default function App() {
   useEffect(() => {
     if (currentUser && currentUser.role !== 'Admin' && currentUser.allowedMenus && currentUser.allowedMenus.length > 0) {
       const allowed = currentUser.allowedMenus;
+      const bopFamily = ['bop', 'bop-management', 'logistics-labor', 'bop-angkutan', 'bop-buruh', 'wage-advance', 'bop-operasional', 'bop-sewa-mobil', 'vehicle-lease'];
       const isAllowed = allowed.some((menuId) => 
         menuId === activeTab || 
+        (bopFamily.includes(menuId) && bopFamily.includes(activeTab)) ||
         (menuId === 'monitoring-pekerjaan' && activeTab.startsWith('monitoring-')) ||
         (menuId === 'monitoring-kendaraan' && (activeTab === 'vehicle-company' || activeTab === 'vehicle-lease')) ||
         (menuId === 'warehouse' && (activeTab === 'warehouse-ambon' || activeTab === 'warehouse-tual')) ||
-        (menuId === 'emergency-management' && ['emergency-work', 'rehap-work', 'pohon-tumbang', 'other-work'].includes(activeTab)) ||
-        menuId === activeTab
+        (menuId === 'emergency-management' && ['emergency-work', 'rehap-work', 'pohon-tumbang', 'other-work'].includes(activeTab))
       );
       if (!isAllowed) {
+        // If allowed has any BOP permission and current activeTab is a BOP tab, don't kick out
+        if (bopFamily.includes(activeTab) && allowed.some(m => bopFamily.includes(m))) {
+          return;
+        }
         setActiveTab(allowed[0]);
       }
     }
   }, [currentUser, activeTab]);
+
+  // Logistics & Labor Cost Actions (Cloud Synchronized)
+  const handleAddLogisticsLaborCost = (newCost: Omit<LogisticsLaborCost, 'id'>) => {
+    const item: LogisticsLaborCost = {
+      ...newCost,
+      id: `EXP-${String(logisticsLaborCosts.length + 1).padStart(3, '0')}`,
+    };
+    setLogisticsLaborCosts([item, ...logisticsLaborCosts]);
+    upsertLogisticsLaborCost(item);
+  };
+
+  const handleUpdateLogisticsLaborCostStatus = (id: string, status: LogisticsLaborCost['status']) => {
+    const target = logisticsLaborCosts.find((c) => c.id === id);
+    if (target) {
+      const updated = { ...target, status };
+      setLogisticsLaborCosts(logisticsLaborCosts.map((c) => (c.id === id ? updated : c)));
+      upsertLogisticsLaborCost(updated);
+    }
+  };
+
+  const handleDeleteLogisticsLaborCost = (id: string) => {
+    setLogisticsLaborCosts(logisticsLaborCosts.filter((c) => c.id !== id));
+    deleteLogisticsLaborCost(id);
+  };
+
+  // Manpower Actions (Cloud Synchronized)
+  const handleAddManpower = (newRecord: Omit<ManpowerRecord, 'id'>) => {
+    const item: ManpowerRecord = {
+      ...newRecord,
+      id: `MP-${String(manpowerRecords.length + 1).padStart(3, '0')}`,
+    };
+    setManpowerRecords([item, ...manpowerRecords]);
+    upsertManpowerRecord(item);
+  };
+
+  const handleUpdateManpower = (updated: ManpowerRecord) => {
+    setManpowerRecords(manpowerRecords.map((m) => (m.id === updated.id ? updated : m)));
+    upsertManpowerRecord(updated);
+  };
+
+  const handleDeleteManpower = (id: string) => {
+    setManpowerRecords(manpowerRecords.filter((m) => m.id !== id));
+    deleteManpowerRecord(id);
+  };
 
   // BOQ Actions (Cloud Synchronized)
   const handleAddBoqItem = (newItem: BoqItem) => {
@@ -454,12 +526,36 @@ export default function App() {
             />
           )}
 
-          {activeTab === 'spbj' && (
+          {(activeTab === 'spbj' || activeTab === 'spbj-list') && (
             <SpbjView
               spbjList={spbjContracts}
               projects={projects}
               onAddSpbj={handleAddSpbj}
               onUpdateSpbjEndDate={handleUpdateSpbjEndDate}
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+              onOpenSummary={(spbjId) => {
+                setSelectedSummarySpbjId(spbjId);
+                setActiveTab('spbj-summary');
+              }}
+            />
+          )}
+
+          {activeTab === 'spbj-summary' && (
+            <SpbjSummaryView
+              spbjList={spbjContracts}
+              initialSpbjId={selectedSummarySpbjId}
+              boqItems={boqItems}
+              mandors={mandors}
+              manpowerList={manpowerRecords}
+              logisticsLaborCosts={logisticsLaborCosts}
+              bopItems={bopItems}
+              leaseVehicles={leaseVehicles}
+              emergencyWorks={emergencyWorks}
+              materialBongkarItems={materialBongkarItems}
+              mduMaterials={mduMaterials}
+              nonMduMaterials={nonMduMaterials}
+              setActiveTab={setActiveTab}
             />
           )}
 
@@ -559,8 +655,19 @@ export default function App() {
             />
           )}
 
+          {activeTab === 'monitoring-manpower' && (
+            <ManpowerListView
+              manpowerList={manpowerRecords}
+              spbjList={spbjContracts}
+              mandors={mandors}
+              onAddManpower={handleAddManpower}
+              onUpdateManpower={handleUpdateManpower}
+              onDeleteManpower={handleDeleteManpower}
+            />
+          )}
+
           {activeTab === 'monitoring-realisasi' && (
-            <WorkRealizationView />
+            <WorkRealizationView spbjList={spbjContracts} />
           )}
 
           {activeTab === 'monitoring-tagging' && (
@@ -568,15 +675,15 @@ export default function App() {
           )}
 
           {activeTab === 'monitoring-timeline' && (
-            <WorkTimelineView />
+            <WorkTimelineView spbjList={spbjContracts} />
           )}
 
           {activeTab === 'monitoring-alat' && (
-            <EquipmentMonitoringView />
+            <EquipmentMonitoringView spbjList={spbjContracts} workers={workers} />
           )}
 
           {activeTab === 'monitoring-apd' && (
-            <PpeMonitoringView />
+            <PpeMonitoringView spbjList={spbjContracts} workers={workers} />
           )}
 
           {activeTab === 'monitoring-mdu' && (
@@ -613,29 +720,73 @@ export default function App() {
             />
           )}
 
-          {activeTab === 'vehicle-lease' && (
+          {(activeTab === 'vehicle-lease' || activeTab === 'bop-sewa-mobil') && (
             <VehicleLeaseView
               leases={leaseVehicles}
               spbjContracts={spbjContracts}
               onAddLease={handleAddLeaseVehicle}
               onUpdateLeaseStatus={handleUpdateLeaseVehicleStatus}
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+              isBopContext={activeTab === 'bop-sewa-mobil'}
             />
           )}
 
-          {activeTab === 'logistics-labor' && (
-            <LogisticsLaborCostView />
-          )}
-          
-          {activeTab === 'wage-advance' && (
-            <WageAdvanceView spbjList={spbjContracts} />
+          {activeTab === 'bop-angkutan' && (
+            <LogisticsLaborCostView
+              mode="angkutan"
+              spbjList={spbjContracts}
+              costs={logisticsLaborCosts}
+              onAddCost={handleAddLogisticsLaborCost}
+              onUpdateStatus={handleUpdateLogisticsLaborCostStatus}
+              onDeleteCost={handleDeleteLogisticsLaborCost}
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+            />
           )}
 
-          {activeTab === 'bop' && (
+          {activeTab === 'bop-buruh' && (
+            <LogisticsLaborCostView
+              mode="buruh"
+              spbjList={spbjContracts}
+              costs={logisticsLaborCosts}
+              onAddCost={handleAddLogisticsLaborCost}
+              onUpdateStatus={handleUpdateLogisticsLaborCostStatus}
+              onDeleteCost={handleDeleteLogisticsLaborCost}
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+            />
+          )}
+
+          {activeTab === 'wage-advance' && (
+            <WageAdvanceView 
+              spbjList={spbjContracts} 
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+            />
+          )}
+
+          {(activeTab === 'bop-operasional' || activeTab === 'bop' || activeTab === 'bop-management') && (
             <BopView
               bopItems={bopItems}
               spbjList={spbjContracts}
               onAddBopItem={handleAddBopItem}
               onUpdateBopStatus={handleUpdateBopStatus}
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+            />
+          )}
+
+          {activeTab === 'logistics-labor' && (
+            <LogisticsLaborCostView
+              mode="all"
+              spbjList={spbjContracts}
+              costs={logisticsLaborCosts}
+              onAddCost={handleAddLogisticsLaborCost}
+              onUpdateStatus={handleUpdateLogisticsLaborCostStatus}
+              onDeleteCost={handleDeleteLogisticsLaborCost}
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
             />
           )}
 

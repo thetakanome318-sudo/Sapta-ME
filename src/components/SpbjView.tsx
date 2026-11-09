@@ -13,7 +13,9 @@ import {
   Edit3, 
   Zap,
   ShieldCheck,
-  ChevronRight
+  ChevronRight,
+  Layers,
+  Eye
 } from 'lucide-react';
 
 interface SpbjViewProps {
@@ -21,6 +23,9 @@ interface SpbjViewProps {
   projects: Project[];
   onAddSpbj: (newSpbj: SpbjContract) => void;
   onUpdateSpbjEndDate: (spbjId: string, newEndDate: string, newStatus?: SpbjContract['status']) => void;
+  activeTab?: string;
+  setActiveTab?: (tab: string) => void;
+  onOpenSummary?: (spbjId: string) => void;
 }
 
 export const SpbjView: React.FC<SpbjViewProps> = ({
@@ -28,6 +33,9 @@ export const SpbjView: React.FC<SpbjViewProps> = ({
   projects,
   onAddSpbj,
   onUpdateSpbjEndDate,
+  activeTab,
+  setActiveTab,
+  onOpenSummary,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -190,13 +198,24 @@ export const SpbjView: React.FC<SpbjViewProps> = ({
           </p>
         </div>
 
-        <button
-          onClick={() => setShowForm(!showForm)}
-          className="flex items-center gap-2 px-4 py-2 text-xs font-semibold text-slate-950 bg-amber-400 hover:bg-amber-300 rounded-lg shadow-sm shadow-amber-400/20 transition-colors"
-        >
-          <Plus className="w-4 h-4" />
-          <span>{showForm ? 'Tutup Menu Input' : '+ Input SPBJ Baru'}</span>
-        </button>
+        <div className="flex flex-wrap items-center gap-2">
+          {setActiveTab && (
+            <button
+              onClick={() => setActiveTab('spbj-summary')}
+              className="flex items-center gap-2 px-3.5 py-2 text-xs font-bold text-amber-400 bg-slate-900 border border-amber-400/40 hover:bg-slate-800 rounded-lg shadow-sm transition-colors"
+            >
+              <Layers className="w-4 h-4 text-amber-400" />
+              <span>Rangkuman 360° per SPBJ</span>
+            </button>
+          )}
+          <button
+            onClick={() => setShowForm(!showForm)}
+            className="flex items-center gap-2 px-4 py-2 text-xs font-semibold text-slate-950 bg-amber-400 hover:bg-amber-300 rounded-lg shadow-sm shadow-amber-400/20 transition-colors"
+          >
+            <Plus className="w-4 h-4" />
+            <span>{showForm ? 'Tutup Menu Input' : '+ Input SPBJ Baru'}</span>
+          </button>
+        </div>
       </div>
 
       {/* Stats Summary Strip */}
@@ -472,14 +491,28 @@ export const SpbjView: React.FC<SpbjViewProps> = ({
 
                     {/* STATUS / AKSI */}
                     <td className="p-4 text-center whitespace-nowrap">
-                      <div className="flex items-center justify-center gap-2">
+                      <div className="flex items-center justify-center gap-1.5">
                         {getStatusBadge(spbj.contractEndDate, spbj.status)}
+                        <button
+                          onClick={() => {
+                            if (onOpenSummary) {
+                              onOpenSummary(spbj.id);
+                            } else if (setActiveTab) {
+                              setActiveTab('spbj-summary');
+                            }
+                          }}
+                          className="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-amber-400 border border-amber-400/40 font-bold rounded text-[10px] transition-colors flex items-center gap-1"
+                          title="Lihat Rangkuman 360° SPBJ ini"
+                        >
+                          <Eye className="w-3 h-3" />
+                          Rangkuman
+                        </button>
                         <button
                           onClick={() => {
                             setEditingSpbj(spbj);
                             setEditDateInput(spbj.contractEndDate);
                           }}
-                          className="px-2.5 py-1 bg-amber-400 hover:bg-amber-300 text-slate-950 font-semibold rounded text-[10px] transition-colors"
+                          className="px-2 py-1 bg-amber-400 hover:bg-amber-300 text-slate-950 font-semibold rounded text-[10px] transition-colors"
                           title="Perpanjang / Addendum Tanggal Akhir"
                         >
                           Addendum

@@ -20,7 +20,9 @@ import {
   UserAccount,
   PlanItem,
   LocationTag,
-  WageAdvance
+  WageAdvance,
+  LogisticsLaborCost,
+  ManpowerRecord
 } from '../types';
 import { 
   INITIAL_SPBJ_CONTRACTS, 
@@ -31,7 +33,9 @@ import {
   INITIAL_EMERGENCY_WORKS, 
   INITIAL_BOP_ITEMS, 
   INITIAL_MATERIAL_BONGKAR, 
-  INITIAL_USERS 
+  INITIAL_USERS,
+  INITIAL_LOGISTICS_LABOR_COSTS,
+  INITIAL_MANPOWER_RECORDS
 } from '../data/mockData';
 
 // Helper to sanitize Firestore document data (remove undefined)
@@ -491,3 +495,94 @@ export async function deleteLocationTag(id: string) {
     handleFirestoreError(error, OperationType.DELETE, `${path}/${id}`);
   }
 }
+
+// 13. Logistics and Labor Costs
+export function subscribeLogisticsLaborCosts(callback: (data: LogisticsLaborCost[]) => void) {
+  const path = 'logisticsLaborCosts';
+  return onSnapshot(
+    collection(db, path),
+    async (snapshot) => {
+      if (snapshot.empty) {
+        try {
+          const batch = writeBatch(db);
+          INITIAL_LOGISTICS_LABOR_COSTS.forEach((item) => {
+            batch.set(doc(db, path, item.id), cleanData(item));
+          });
+          await batch.commit();
+        } catch (e) {
+          console.warn('Seeding initial logistics labor costs failed:', e);
+        }
+        callback(INITIAL_LOGISTICS_LABOR_COSTS);
+        return;
+      }
+      const items: LogisticsLaborCost[] = [];
+      snapshot.forEach((docSnap) => items.push(docSnap.data() as LogisticsLaborCost));
+      callback(items);
+    },
+    (error) => handleFirestoreError(error, OperationType.LIST, path)
+  );
+}
+
+export async function upsertLogisticsLaborCost(item: LogisticsLaborCost) {
+  const path = 'logisticsLaborCosts';
+  try {
+    await setDoc(doc(db, path, item.id), cleanData(item));
+  } catch (error) {
+    handleFirestoreError(error, OperationType.WRITE, `${path}/${item.id}`);
+  }
+}
+
+export async function deleteLogisticsLaborCost(id: string) {
+  const path = 'logisticsLaborCosts';
+  try {
+    await deleteDoc(doc(db, path, id));
+  } catch (error) {
+    handleFirestoreError(error, OperationType.DELETE, `${path}/${id}`);
+  }
+}
+
+// 14. Manpower Records
+export function subscribeManpowerRecords(callback: (data: ManpowerRecord[]) => void) {
+  const path = 'manpowerRecords';
+  return onSnapshot(
+    collection(db, path),
+    async (snapshot) => {
+      if (snapshot.empty) {
+        try {
+          const batch = writeBatch(db);
+          INITIAL_MANPOWER_RECORDS.forEach((item) => {
+            batch.set(doc(db, path, item.id), cleanData(item));
+          });
+          await batch.commit();
+        } catch (e) {
+          console.warn('Seeding initial manpower records failed:', e);
+        }
+        callback(INITIAL_MANPOWER_RECORDS);
+        return;
+      }
+      const items: ManpowerRecord[] = [];
+      snapshot.forEach((docSnap) => items.push(docSnap.data() as ManpowerRecord));
+      callback(items);
+    },
+    (error) => handleFirestoreError(error, OperationType.LIST, path)
+  );
+}
+
+export async function upsertManpowerRecord(item: ManpowerRecord) {
+  const path = 'manpowerRecords';
+  try {
+    await setDoc(doc(db, path, item.id), cleanData(item));
+  } catch (error) {
+    handleFirestoreError(error, OperationType.WRITE, `${path}/${item.id}`);
+  }
+}
+
+export async function deleteManpowerRecord(id: string) {
+  const path = 'manpowerRecords';
+  try {
+    await deleteDoc(doc(db, path, id));
+  } catch (error) {
+    handleFirestoreError(error, OperationType.DELETE, `${path}/${id}`);
+  }
+}
+

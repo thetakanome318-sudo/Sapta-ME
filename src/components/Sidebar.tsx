@@ -32,7 +32,8 @@ import {
   Siren,
   Receipt,
   Wallet,
-  Plus
+  Plus,
+  Layers
 } from 'lucide-react';
 import { UserAccount } from '../types';
 
@@ -59,7 +60,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   currentUser,
   onLogout,
 }) => {
-  const [expandedMenus, setExpandedMenus] = useState<Record<string, boolean>>({});
+  const [expandedMenus, setExpandedMenus] = useState<Record<string, boolean>>({ spbj: true, bop: true, 'bop-management': true });
 
   const toggleMenu = (menuId: string) => {
     setExpandedMenus(prev => ({
@@ -69,15 +70,35 @@ export const Sidebar: React.FC<SidebarProps> = ({
   };
 
   const navItems = [
-    { id: 'spbj', label: 'Daftar SPBJ', icon: FileText },
+    { 
+      id: 'spbj', 
+      label: 'Daftar & Rangkuman SPBJ', 
+      icon: FileText,
+      subItems: [
+        { id: 'spbj-list', label: 'Daftar SPBJ Kontrak', icon: FileText },
+        { id: 'spbj-summary', label: 'Rangkuman 360° per SPBJ', icon: Layers }
+      ]
+    },
     { id: 'boq', label: 'Bill of Quantities (BOQ)', icon: FileSpreadsheet },
     { id: 'mandor', label: 'Database Mandor', icon: Users },
-    { id: 'wage-advance', label: 'Panjar Mandor', icon: Wallet },
+    { 
+      id: 'bop', 
+      label: 'BOP (Biaya Operasional)', 
+      icon: Receipt,
+      subItems: [
+        { id: 'bop-angkutan', label: 'Angkutan', icon: Truck },
+        { id: 'bop-buruh', label: 'Buruh', icon: Users },
+        { id: 'wage-advance', label: 'Panjar Mandor', icon: Wallet },
+        { id: 'bop-operasional', label: 'Operasional', icon: Coins },
+        { id: 'bop-sewa-mobil', label: 'Sewa Mobil', icon: Car }
+      ]
+    },
     { 
       id: 'monitoring-pekerjaan', 
       label: 'Monitoring Pekerjaan', 
       icon: Activity,
       subItems: [
+        { id: 'monitoring-manpower', label: 'Daftar Man Power', icon: Users },
         { id: 'monitoring-realisasi', label: 'Realisasi Pekerjaan', icon: TrendingUp },
         { id: 'monitoring-tagging', label: 'Tagging Lokasi', icon: MapPin },
         { id: 'monitoring-timeline', label: 'Timeline Pekerjaan', icon: Calendar },
@@ -99,18 +120,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
         { id: 'other-work', label: 'Pekerjaan Lain', icon: Plus }
       ]
     },
-    {
-      id: 'monitoring-kendaraan',
-      label: 'Monitoring Kendaraan',
-      icon: Truck,
-      subItems: [
-        { id: 'vehicle-company', label: 'Perusahaan', icon: Car },
-        { id: 'vehicle-lease', label: 'Kontrak Sewa', icon: FileSpreadsheet }
-      ]
-    },
-    { id: 'master-data', label: 'Master Data', icon: Database },
-    { id: 'logistics-labor', label: 'Biaya Angkutan & Buruh', icon: Coins },
-    { id: 'bop', label: 'Biaya Operasional (BOP)', icon: Receipt },
     { 
       id: 'warehouse', 
       label: 'Gudang / Stock', 
@@ -122,7 +131,55 @@ export const Sidebar: React.FC<SidebarProps> = ({
     },
     { id: 'presentation', label: 'Presentasi Deck', icon: Presentation },
     { id: 'whatsapp-report', label: 'Pelaporan WhatsApp', icon: MessageSquare },
+    { id: 'master-data', label: 'Master Data', icon: Database },
   ];
+
+  // Robust permission check helper supporting backward compatibility
+  const isMenuAllowed = (id: string): boolean => {
+    if (!currentUser || currentUser.role === 'Admin') return true;
+    const allowed = currentUser.allowedMenus;
+    if (!allowed || allowed.length === 0) return true;
+
+    // Direct match
+    if (allowed.includes(id)) return true;
+
+    // SPBJ family: any SPBJ permission allows spbj, spbj-list, spbj-summary
+    const spbjFamily = ['spbj', 'spbj-list', 'spbj-summary'];
+    if (spbjFamily.includes(id)) {
+      if (allowed.some(a => spbjFamily.includes(a))) return true;
+    }
+
+    // BOP family: any BOP permission allows bop and its submenus
+    const bopFamily = ['bop', 'bop-management', 'logistics-labor', 'bop-angkutan', 'bop-buruh', 'wage-advance', 'bop-operasional', 'bop-sewa-mobil', 'vehicle-lease'];
+    if (bopFamily.includes(id)) {
+      if (allowed.some(a => bopFamily.includes(a))) return true;
+    }
+
+    // Emergency family
+    const emergencyFamily = ['emergency-management', 'emergency-work', 'rehap-work', 'pohon-tumbang', 'other-work'];
+    if (emergencyFamily.includes(id)) {
+      if (allowed.some(a => emergencyFamily.includes(a))) return true;
+    }
+
+    // Monitoring family
+    if (id === 'monitoring-pekerjaan' || id.startsWith('monitoring-')) {
+      if (allowed.includes('monitoring-pekerjaan') || allowed.includes(id)) return true;
+    }
+
+    // Vehicle family
+    const vehicleFamily = ['monitoring-kendaraan', 'vehicle-company', 'vehicle-lease'];
+    if (vehicleFamily.includes(id)) {
+      if (allowed.some(a => vehicleFamily.includes(a))) return true;
+    }
+
+    // Warehouse family
+    const warehouseFamily = ['warehouse', 'warehouse-ambon', 'warehouse-tual'];
+    if (warehouseFamily.includes(id)) {
+      if (allowed.some(a => warehouseFamily.includes(a))) return true;
+    }
+
+    return false;
+  };
 
   return (
     <>
@@ -182,25 +239,21 @@ export const Sidebar: React.FC<SidebarProps> = ({
           {navItems
             .filter((item) => {
               if (!currentUser || currentUser.role === 'Admin') return true;
-              const allowed = currentUser.allowedMenus;
-              if (!allowed || allowed.length === 0) return true;
-              if (allowed.includes(item.id)) return true;
-              if (item.subItems && item.subItems.some(sub => allowed.includes(sub.id) || allowed.includes(item.id))) {
+              if (isMenuAllowed(item.id)) return true;
+              if (item.subItems && item.subItems.some(sub => isMenuAllowed(sub.id))) {
                 return true;
               }
               return false;
             })
             .map((item) => {
               const IconComponent = item.icon;
-              const allowedSubItems = item.subItems?.filter((sub) => {
-                if (!currentUser || currentUser.role === 'Admin') return true;
-                const allowed = currentUser.allowedMenus;
-                if (!allowed || allowed.length === 0) return true;
-                return allowed.includes(sub.id) || allowed.includes(item.id);
-              });
+              const allowedSubItems = item.subItems?.filter((sub) => isMenuAllowed(sub.id));
               const hasSubItems = allowedSubItems && allowedSubItems.length > 0;
-              const isParentActive = activeTab === item.id || (hasSubItems && allowedSubItems?.some(sub => activeTab === sub.id));
-              const isExpanded = expandedMenus[item.id];
+              
+              const isSpbjFamily = item.id === 'spbj' && ['spbj', 'spbj-list', 'spbj-summary'].includes(activeTab);
+              const isBopFamily = item.id === 'bop' && ['bop', 'bop-management', 'bop-angkutan', 'bop-buruh', 'wage-advance', 'bop-operasional', 'bop-sewa-mobil', 'vehicle-lease', 'logistics-labor'].includes(activeTab);
+              const isParentActive = activeTab === item.id || isSpbjFamily || isBopFamily || (hasSubItems && allowedSubItems?.some(sub => activeTab === sub.id));
+              const isExpanded = expandedMenus[item.id] !== undefined ? expandedMenus[item.id] : isParentActive;
 
               return (
                 <div key={item.id} className="space-y-1">
@@ -208,6 +261,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     onClick={() => {
                       if (hasSubItems) {
                         toggleMenu(item.id);
+                        if (!isParentActive && allowedSubItems && allowedSubItems.length > 0) {
+                          setActiveTab(allowedSubItems[0].id);
+                        }
                       } else {
                         setActiveTab(item.id);
                         setSidebarOpen(false);
@@ -242,7 +298,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                             }}
                             className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-[11px] font-medium transition-all ${
                               isSubActive
-                                ? 'text-amber-400 bg-slate-800'
+                                ? 'text-amber-400 bg-slate-800 font-bold'
                                 : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800/50'
                             }`}
                           >
