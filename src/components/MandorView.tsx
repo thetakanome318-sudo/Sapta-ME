@@ -16,11 +16,11 @@ import {
   IdCard,
   Trash2,
   Image as ImageIcon,
-  Layers,
   Eye,
+  Maximize,
   X
 } from 'lucide-react';
-import { APIProvider, Map, AdvancedMarker } from '@vis.gl/react-google-maps';
+import { APIProvider, Map, AdvancedMarker, Pin, useMap } from '@vis.gl/react-google-maps';
 
 interface MandorViewProps {
   mandors: Mandor[];
@@ -40,8 +40,9 @@ export const MandorView: React.FC<MandorViewProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [projectFilter, setProjectFilter] = useState('all');
   const [showInputForm, setShowInputForm] = useState(false);
-  const [activeTab, setActiveTab] = useState<'table' | 'grid' | 'multi-location' | 'map'>('table');
+  const [activeTab, setActiveTab] = useState<'table' | 'map'>('table');
   const [mapSpbjFilter, setMapSpbjFilter] = useState('all');
+  const [mapTypeId, setMapTypeId] = useState('satellite');
 
   // Form State for Mandor Input
   const [mandorName, setMandorName] = useState('');
@@ -208,35 +209,6 @@ export const MandorView: React.FC<MandorViewProps> = ({
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="flex bg-slate-200 dark:bg-slate-800 p-1 rounded-xl text-xs font-semibold">
-            <button
-              onClick={() => setActiveTab('table')}
-              className={`px-3 py-1.5 rounded-lg transition-colors ${activeTab === 'table' ? 'bg-amber-400 text-slate-950 font-bold shadow-xs' : 'text-slate-600 dark:text-slate-300'}`}
-            >
-              Tabel Monitoring ({mandors.length})
-            </button>
-            <button
-              onClick={() => setActiveTab('grid')}
-              className={`px-3 py-1.5 rounded-lg transition-colors ${activeTab === 'grid' ? 'bg-amber-400 text-slate-950 font-bold shadow-xs' : 'text-slate-600 dark:text-slate-300'}`}
-            >
-              Grid Card ({mandors.length})
-            </button>
-            <button
-              onClick={() => setActiveTab('multi-location')}
-              className={`px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 ${activeTab === 'multi-location' ? 'bg-amber-400 text-slate-950 font-bold shadow-xs' : 'text-slate-600 dark:text-slate-300'}`}
-            >
-              <Layers className="w-3.5 h-3.5" />
-              <span>Multi-Lokasi ({multiLocationMandors.length})</span>
-            </button>
-            <button
-              onClick={() => setActiveTab('map')}
-              className={`px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 ${activeTab === 'map' ? 'bg-amber-400 text-slate-950 font-bold shadow-xs' : 'text-slate-600 dark:text-slate-300'}`}
-            >
-              <MapPin className="w-3.5 h-3.5" />
-              <span>Peta Sebaran SPBJ</span>
-            </button>
-          </div>
-
           <button
             onClick={() => setShowInputForm(!showInputForm)}
             className="flex items-center gap-2 px-4 py-2 text-xs font-semibold text-slate-950 bg-amber-400 hover:bg-amber-300 rounded-xl shadow-sm shadow-amber-400/20 transition-colors"
@@ -700,348 +672,78 @@ export const MandorView: React.FC<MandorViewProps> = ({
         </div>
       )}
 
-      {/* TAB CONTENT 2: GRID VIEW SEMUA MANDOR */}
-      {activeTab === 'grid' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {filteredMandors.map((mandor) => (
-            <div
-              key={mandor.id}
-              className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm hover:border-amber-400/50 transition-all flex flex-col justify-between space-y-4"
+      {/* PERSISTENT MAP BELOW MONITORING (As requested: "di bawah monitoring ini") */}
+      <div className="space-y-4 pt-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <MapPin className="w-5 h-5 text-amber-500" />
+            <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">
+              Peta Sebaran Lokasi Mandor On-Site
+            </h3>
+          </div>
+          <div className="flex bg-slate-200 dark:bg-slate-800 p-1 rounded-lg text-[10px] font-bold">
+            <button 
+              onClick={() => setMapTypeId('satellite')}
+              className={`px-3 py-1 rounded-md transition-all ${mapTypeId === 'satellite' ? 'bg-amber-400 text-slate-900' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
             >
-              <div className="space-y-4">
-                {/* Card Header */}
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-2xl bg-amber-400/20 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold text-base shrink-0 border border-amber-400/30">
-                      <HardHat className="w-6 h-6" />
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-[10px] font-mono font-semibold text-slate-400">
-                          {mandor.id}
-                        </span>
-                        <span className="px-2 py-0.5 text-[10px] font-bold rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                          {mandor.status}
-                        </span>
-                      </div>
-                      <h4 className="text-base font-bold text-slate-900 dark:text-white">
-                        {mandor.name}
-                      </h4>
-                    </div>
-                  </div>
-
-                  {/* KTP Preview Button */}
-                  <button
-                    onClick={() => setPreviewKtpUrl(mandor.ktpPhotoUrl || 'https://images.unsplash.com/photo-1544717305-2782549b5136?w=400&auto=format&fit=crop&q=80')}
-                    className="flex items-center gap-1.5 px-2.5 py-1 bg-slate-100 dark:bg-slate-800 hover:bg-amber-400/10 hover:text-amber-500 text-slate-700 dark:text-slate-300 rounded-lg text-[11px] font-bold transition-colors border border-slate-200 dark:border-slate-700"
-                    title="Lihat Foto KTP Mandor"
-                  >
-                    <IdCard className="w-3.5 h-3.5 text-amber-500" />
-                    <span>KTP</span>
-                  </button>
-                </div>
-
-                {/* Lokasi Pekerjaan Utama & Multi-Lokasi Badge */}
-                <div className="p-3.5 bg-amber-500/10 border border-amber-500/20 rounded-xl space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[11px] font-semibold text-amber-800 dark:text-amber-300 flex items-center gap-1.5">
-                      <MapPin className="w-3.5 h-3.5 text-amber-500 shrink-0" />
-                      <span>Lokasi Aktif Utama:</span>
-                    </span>
-                    {mandor.locations && mandor.locations.length > 1 && (
-                      <span className="text-[10px] font-mono font-bold bg-amber-500 text-slate-950 px-2 py-0.5 rounded-full">
-                        {mandor.locations.length} Lokasi Sekaligus
-                      </span>
-                    )}
-                  </div>
-                  <p className="text-xs font-bold text-slate-900 dark:text-white pl-5 leading-relaxed">
-                    {mandor.workLocation}
-                  </p>
-
-                  {/* Daftar Multi Lokasi Jika Ada */}
-                  {mandor.locations && mandor.locations.length > 1 && (
-                    <div className="pt-2 pl-5 space-y-1 border-t border-amber-500/20">
-                      <span className="text-[10px] font-bold text-slate-500 uppercase">Lokasi Pengawasan Lainnya:</span>
-                      {mandor.locations.slice(1).map((loc, lIdx) => (
-                        <div key={lIdx} className="text-[11px] font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-                          <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-                          <span>{loc.locationName}</span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                {/* Subcontractor Team & Specialization */}
-                <div className="space-y-1.5 text-xs text-slate-600 dark:text-slate-300">
-                  <div className="flex items-center justify-between">
-                    <span className="text-slate-500 dark:text-slate-400 flex items-center gap-1">
-                      <Briefcase className="w-3.5 h-3.5 text-slate-400" /> Tim / Vendor:
-                    </span>
-                    <span className="font-semibold text-slate-900 dark:text-white">
-                      {mandor.subcontractorTeam}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <span className="text-slate-500 dark:text-slate-400 flex items-center gap-1">
-                      <Users className="w-3.5 h-3.5 text-slate-400" /> Anggota / Manpower:
-                    </span>
-                    <span className="font-mono font-bold text-amber-600 dark:text-amber-400">
-                      {mandor.workerCount} Teknisi ME
-                    </span>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <span className="text-slate-500 dark:text-slate-400 flex items-center gap-1">
-                      <Building2 className="w-3.5 h-3.5 text-slate-400" /> Proyek Induk:
-                    </span>
-                    <span className="font-medium text-slate-800 dark:text-slate-200 truncate max-w-[200px]">
-                      {mandor.projectName}
-                    </span>
-                  </div>
-                </div>
-
-                {mandor.manpowerList && mandor.manpowerList.length > 0 && (
-                  <div className="pt-2 space-y-1.5">
-                    <span className="text-[10px] font-bold text-slate-500 uppercase flex items-center gap-1">
-                      <IdCard className="w-3 h-3" /> Anggota Tim Terdaftar ({mandor.manpowerList.length}):
-                    </span>
-                    <div className="grid grid-cols-1 gap-1 max-h-24 overflow-y-auto">
-                      {mandor.manpowerList.map((mp, idx) => (
-                        <div key={idx} className="flex justify-between items-center text-[10px] bg-slate-50 dark:bg-slate-800/50 p-1.5 rounded-lg border border-slate-100 dark:border-slate-800">
-                          <span className="font-semibold text-slate-900 dark:text-white">{mp.name}</span>
-                          <span className="text-slate-400 font-mono">{mp.ktpNumber}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Card Actions / Contact */}
-              <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs">
-                <span className="text-slate-500 dark:text-slate-400 flex items-center gap-1 font-mono">
-                  <Phone className="w-3.5 h-3.5 text-emerald-500" />
-                  <span>{mandor.phone}</span>
-                </span>
-
-                <button
-                  onClick={() => {
-                    setEditingMandor(mandor);
-                    setEditLocationInput(mandor.workLocation);
-                  }}
-                  className="text-amber-600 dark:text-amber-400 font-semibold hover:underline flex items-center gap-1"
-                >
-                  <Edit3 className="w-3.5 h-3.5" />
-                  <span>Tambah Lokasi Kerja</span>
-                </button>
-              </div>
-            </div>
-          ))}
+              Satelit
+            </button>
+            <button 
+              onClick={() => setMapTypeId('roadmap')}
+              className={`px-3 py-1 rounded-md transition-all ${mapTypeId === 'roadmap' ? 'bg-amber-400 text-slate-900' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
+            >
+              Street
+            </button>
+          </div>
         </div>
-      )}
 
-      {/* TAB CONTENT 2: MONITORING MULTI-LOKASI MANDOR */}
-      {activeTab === 'multi-location' && (
-        <div className="space-y-6">
-          <div className="bg-amber-500/10 border border-amber-500/30 p-5 rounded-2xl flex items-start gap-3">
-            <Layers className="w-6 h-6 text-amber-500 shrink-0 mt-0.5" />
-            <div>
-              <h3 className="font-bold text-sm text-slate-900 dark:text-white">
-                Dashboard Monitoring 1 Mandor di Beberapa Lokasi Sekaligus
-              </h3>
-              <p className="text-xs text-slate-600 dark:text-slate-300 mt-1">
-                Berikut adalah daftar mandor yang aktif mengawasi dan mengerjakan proyek di lebih dari satu lokasi (multi-site supervision) secara bersamaan.
+        <div className="bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden h-[400px] relative">
+          <APIProvider apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY || ''}>
+            <Map 
+              mapId="DEMO_MAP_ID"
+              defaultCenter={{ lat: -5.6, lng: 132.7 }}
+              defaultZoom={12}
+              mapTypeId={mapTypeId}
+              disableDefaultUI
+              gestureHandling={'greedy'}
+            >
+              {mandors.map((m) => {
+                const hash = m.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+                const lat = -5.6 + ((hash % 100) / 500) - 0.1;
+                const lng = 132.7 + ((hash % 150) / 500) - 0.15;
+                
+                return (
+                  <AdvancedMarker key={m.id} position={{ lat, lng }} title={m.name}>
+                    <div className="relative group">
+                      <div className="w-5 h-5 bg-white rounded-full border-2 border-amber-500 flex items-center justify-center shadow-lg group-hover:scale-125 transition-transform cursor-pointer">
+                        <div className="w-2 h-2 bg-amber-500 rounded-full" />
+                      </div>
+                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-slate-900 text-white text-[10px] font-bold rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50 shadow-2xl border border-slate-700">
+                        <p>{m.name}</p>
+                        <p className="text-[9px] text-amber-400">{m.workLocation}</p>
+                      </div>
+                    </div>
+                  </AdvancedMarker>
+                );
+              })}
+            </Map>
+          </APIProvider>
+          
+          <div className="absolute bottom-4 left-4 p-3 bg-slate-900/90 backdrop-blur-md rounded-xl border border-slate-700 shadow-2xl z-20 pointer-events-none">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
+              <span className="text-[10px] font-bold text-white uppercase tracking-widest">Real-Time Distribution</span>
+            </div>
+            <div className="space-y-1">
+              <p className="text-[9px] text-slate-400 font-bold uppercase">Mandor Terdeteksi</p>
+              <p className="text-xl font-black text-white leading-none tracking-tighter">
+                {mandors.length} <span className="text-[10px] text-slate-500 ml-1">Orang</span>
               </p>
             </div>
           </div>
-
-          {multiLocationMandors.length === 0 ? (
-            <div className="bg-white dark:bg-slate-900 p-12 rounded-2xl border border-slate-200 dark:border-slate-800 text-center space-y-3">
-              <HardHat className="w-12 h-12 text-slate-400 mx-auto" />
-              <h4 className="font-bold text-slate-800 dark:text-slate-200">Belum ada mandor dengan multi-lokasi aktif</h4>
-              <p className="text-xs text-slate-500">Tambahkan lokasi kerja tambahan pada profil mandor untuk melihat pemantauan multi-site di sini.</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {multiLocationMandors.map((mandor) => (
-                <div key={mandor.id} className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-amber-400/20 text-amber-500 flex items-center justify-center font-bold">
-                        <HardHat className="w-5 h-5" />
-                      </div>
-                      <div>
-                        <h4 className="font-bold text-slate-900 dark:text-white text-base">{mandor.name}</h4>
-                        <span className="text-[10px] font-mono text-slate-400">{mandor.subcontractorTeam}</span>
-                      </div>
-                    </div>
-                    <span className="px-2.5 py-1 rounded-full text-xs font-mono font-bold bg-amber-400 text-slate-950">
-                      {mandor.locations?.length || 0} Lokasi Kerja
-                    </span>
-                  </div>
-
-                  <div className="space-y-2 pt-2">
-                    <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">
-                      Daftar Lokasi Penugasan Aktif:
-                    </span>
-                    <div className="space-y-2">
-                      {mandor.locations?.map((loc, lIdx) => (
-                        <div key={lIdx} className="bg-slate-50 dark:bg-slate-800/60 p-3 rounded-xl border border-slate-200 dark:border-slate-700 flex items-start justify-between gap-3">
-                          <div className="space-y-1">
-                            <div className="flex items-center gap-2">
-                              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                              <span className="text-xs font-bold text-slate-900 dark:text-white">
-                                {loc.locationName}
-                              </span>
-                            </div>
-                            <span className="text-[10px] text-slate-500 font-mono block">
-                              Mulai Pengawasan: {loc.date} · Proyek: {mandor.projectName}
-                            </span>
-                          </div>
-                          <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
-                            {loc.status}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex justify-between items-center text-xs">
-                    <span className="text-slate-500">Kontak: <strong className="font-mono text-slate-800 dark:text-slate-200">{mandor.phone}</strong></span>
-                    <button
-                      onClick={() => {
-                        setEditingMandor(mandor);
-                        setEditLocationInput(mandor.workLocation);
-                      }}
-                      className="text-amber-600 dark:text-amber-400 font-bold hover:underline"
-                    >
-                      + Tambah Lokasi Lain
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
         </div>
-      )}
+      </div>
 
-      {/* TAB CONTENT 3: PETA SEBARAN MANDOR & SPBJ */}
-      {activeTab === 'map' && (
-        <div className="space-y-6">
-          <div className="bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-xl flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
-            <div>
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-semibold mb-2">
-                <MapPin className="w-3.5 h-3.5" />
-                <span>Geographic Site & SPBJ Distribution Map</span>
-              </div>
-              <h3 className="text-xl font-bold text-white">
-                Peta Sebaran Pekerjaan Mandor & Alokasi SPBJ
-              </h3>
-              <p className="text-xs text-slate-400 mt-1 max-w-xl">
-                Visualisasi sebaran titik lokasi kerja mandor di lapangan yang terhubung dengan kontrak Surat Perjanjian Barang dan Jasa (SPBJ) PLN.
-              </p>
-            </div>
-
-            <div className="flex items-center gap-3 bg-slate-950 p-3 rounded-xl border border-slate-800">
-              <label className="text-xs font-bold text-slate-300">Filter SPBJ:</label>
-              <select
-                value={mapSpbjFilter}
-                onChange={(e) => setMapSpbjFilter(e.target.value)}
-                className="bg-slate-900 border border-slate-700 text-white text-xs font-bold rounded-lg px-3 py-1.5 focus:outline-none focus:border-amber-400"
-              >
-                <option value="all">Semua SPBJ Kontrak ({spbjList.length})</option>
-                {spbjList.map((s) => (
-                  <option key={s.id} value={s.id}>
-                    {s.spbjNumber} ({s.up3Name})
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          {/* Interactive Map Visual Mockup / Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-2xl p-2 shadow-xl relative overflow-hidden min-h-[420px] flex flex-col">
-              <div className="absolute inset-0 opacity-15 bg-[radial-gradient(#f59e0b_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none" />
-
-              <div className="relative z-10 p-4 border-b border-slate-800 flex items-center justify-between">
-                <div className="flex items-center gap-2 text-xs font-mono text-emerald-400">
-                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping" />
-                  <span>GPS Tracking Active · {mandors.length} Mandor On-Site</span>
-                </div>
-                <span className="text-[10px] font-mono text-slate-400 bg-slate-950 px-2 py-1 rounded border border-slate-800">
-                  Koordinat Area UP3 / PLN Distribution
-                </span>
-              </div>
-
-              {/* Interactive Map */}
-              <div className="flex-1 w-full h-[400px]">
-                <APIProvider apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY || ''}>
-                  <Map 
-                    mapId="DEMO_MAP_ID" 
-                    defaultCenter={{ lat: -5.6, lng: 132.7 }} 
-                    defaultZoom={12}
-                    disableDefaultUI
-                    gestureHandling={'greedy'}
-                  >
-                    {mandors
-                      .filter((m) => mapSpbjFilter === 'all' || m.projectId === mapSpbjFilter || m.projectName?.includes(mapSpbjFilter))
-                      .map((m) => {
-                         // Fallback logic for coordinates since mandor doesn't store them directly
-                         // In a real scenario, use mandor location tags if available
-                         const lat = -5.6 + (Math.random() * 0.2 - 0.1);
-                         const lng = 132.7 + (Math.random() * 0.2 - 0.1);
-                         return (
-                          <AdvancedMarker key={m.id} position={{ lat, lng }} title={m.name}>
-                            <div className="relative group">
-                              <div className="w-8 h-8 bg-amber-500 rounded-full border-2 border-white flex items-center justify-center shadow-lg cursor-pointer hover:scale-110 transition-transform">
-                                <HardHat className="w-4 h-4 text-white" />
-                              </div>
-                            </div>
-                          </AdvancedMarker>
-                         );
-                      })}
-                  </Map>
-                </APIProvider>
-              </div>
-            </div>
-
-            {/* Side Summary Card */}
-            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-4">
-              <h4 className="text-xs font-bold text-white uppercase tracking-wider pb-3 border-b border-slate-800 flex items-center gap-2">
-                <FileText className="w-4 h-4 text-amber-400" />
-                <span>Statistik Sebaran SPBJ Mandor</span>
-              </h4>
-
-              <div className="space-y-3 text-xs">
-                <div className="bg-slate-950 p-3.5 rounded-xl border border-slate-800 flex items-center justify-between">
-                  <span className="text-slate-400">Total Mandor Aktif</span>
-                  <strong className="text-amber-400 font-mono text-sm">{mandors.length} Orang</strong>
-                </div>
-                <div className="bg-slate-950 p-3.5 rounded-xl border border-slate-800 flex items-center justify-between">
-                  <span className="text-slate-400">Total Teknis Lapangan (Manpower)</span>
-                  <strong className="text-emerald-400 font-mono text-sm">
-                    {mandors.reduce((sum, m) => sum + m.workerCount, 0)} Personil
-                  </strong>
-                </div>
-                <div className="bg-slate-950 p-3.5 rounded-xl border border-slate-800 flex items-center justify-between">
-                  <span className="text-slate-400">Mandor Multi-Lokasi</span>
-                  <strong className="text-blue-400 font-mono text-sm">{multiLocationMandors.length} Mandor</strong>
-                </div>
-              </div>
-
-              <div className="bg-amber-400/10 border border-amber-400/20 p-4 rounded-xl text-xs text-amber-300 space-y-1">
-                <strong>Informasi Rute & Wilayah Kerja:</strong>
-                <p className="text-[11px] text-slate-300 leading-relaxed">
-                  Setiap mandor terhubung langsung dengan dokumen Surat Perjanjian Barang dan Jasa (SPBJ) PLN untuk memastikan akurasi penugasan dan pertanggungjawaban operasional.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Modal: KTP Photo Preview */}
       {previewKtpUrl && (

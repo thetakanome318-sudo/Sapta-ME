@@ -60,7 +60,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   currentUser,
   onLogout,
 }) => {
-  const [expandedMenus, setExpandedMenus] = useState<Record<string, boolean>>({ spbj: true, bop: true, 'bop-management': true });
+  const [expandedMenus, setExpandedMenus] = useState<Record<string, boolean>>({});
 
   const toggleMenu = (menuId: string) => {
     setExpandedMenus(prev => ({
