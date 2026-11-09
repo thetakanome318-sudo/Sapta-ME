@@ -36,6 +36,7 @@ export const BoqView: React.FC<BoqViewProps> = ({
   const [selectedSpbjId, setSelectedSpbjId] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [viewMode, setViewMode] = useState<'table' | 'live-paper'>('table');
 
   // Modals state
   const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
@@ -148,24 +149,187 @@ export const BoqView: React.FC<BoqViewProps> = ({
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="flex bg-slate-200 dark:bg-slate-800 p-1 rounded-xl text-xs font-semibold">
+            <button
+              onClick={() => setViewMode('table')}
+              className={`px-3 py-1.5 rounded-lg transition-colors ${viewMode === 'table' ? 'bg-blue-900 text-white font-bold shadow-xs' : 'text-slate-600 dark:text-slate-300'}`}
+            >
+              Tabel Standar
+            </button>
+            <button
+              onClick={() => setViewMode('live-paper')}
+              className={`px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 ${viewMode === 'live-paper' ? 'bg-blue-900 text-white font-bold shadow-xs' : 'text-slate-600 dark:text-slate-300'}`}
+            >
+              <FileSpreadsheet className="w-3.5 h-3.5" />
+              <span>Live Paper Kertas Kerja</span>
+            </button>
+          </div>
+
           <button
             onClick={() => exportBoqPDF(boqItems, spbjList, selectedSpbjId)}
-            className="flex items-center gap-2 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs transition-colors shadow-sm"
+            className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs transition-colors shadow-sm"
           >
             <Download className="w-4 h-4" />
-            <span>Export PDF BOQ</span>
+            <span>Export PDF</span>
           </button>
 
           <button
             onClick={() => setIsAddModalOpen(true)}
-            className="flex items-center gap-2 px-4 py-2.5 bg-blue-900 hover:bg-blue-800 text-white font-bold rounded-xl text-xs transition-colors shadow-sm"
+            className="flex items-center gap-2 px-4 py-2 bg-blue-900 hover:bg-blue-800 text-white font-bold rounded-xl text-xs transition-colors shadow-sm"
           >
             <Plus className="w-4 h-4" />
-            <span>Tambah Item BOQ</span>
+            <span>+ Item BOQ</span>
           </button>
         </div>
       </div>
+
+      {viewMode === 'live-paper' ? (
+        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-8 shadow-xl space-y-6">
+          {/* Formal Letterhead */}
+          <div className="border-b-2 border-blue-900 pb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
+              <span className="text-[10px] font-bold text-blue-900 dark:text-blue-400 tracking-widest uppercase block mb-1">
+                PT SAPTA MANUNGGAL KARYA · DIVISI ME
+              </span>
+              <h1 className="text-xl font-extrabold text-slate-900 dark:text-white uppercase tracking-tight">
+                Live Working Paper — Kertas Kerja BOQ & RAB Proyek PLN
+              </h1>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                Dokumen Kertas Kerja Keuangan & Progres Fisik Real-Time per SPBJ Kontrak
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => window.print()}
+                className="px-4 py-2 bg-blue-900 text-white text-xs font-bold rounded-xl hover:bg-blue-800 shadow-sm flex items-center gap-1.5"
+              >
+                <Download className="w-3.5 h-3.5" />
+                <span>Cetak / Print Live Paper</span>
+              </button>
+              <button
+                onClick={() => setViewMode('table')}
+                className="px-4 py-2 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold rounded-xl hover:bg-slate-300"
+              >
+                Kembali ke Tabel
+              </button>
+            </div>
+          </div>
+
+          {/* SPBJ Filter Bar in Live Paper */}
+          <div className="bg-slate-50 dark:bg-slate-950 p-4 rounded-xl border border-slate-200 dark:border-slate-800 flex items-center justify-between gap-4">
+            <div className="flex items-center gap-2 text-xs font-bold">
+              <span className="text-slate-500">Filter SPBJ Kontrak:</span>
+              <select
+                value={selectedSpbjId}
+                onChange={(e) => setSelectedSpbjId(e.target.value)}
+                className="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white text-xs font-bold rounded-lg px-3 py-1.5"
+              >
+                <option value="all">Semua Kontrak SPBJ ({spbjList.length})</option>
+                {spbjList.map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.spbjNumber} ({s.up3Name})
+                  </option>
+                ))}
+              </select>
+            </div>
+            <span className="text-xs font-mono text-emerald-600 dark:text-emerald-400 font-bold">
+              Status: Live Calculation Active ({filteredItems.length} Item)
+            </span>
+          </div>
+
+          {/* Executive Summary Grid */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
+            <div className="bg-slate-50 dark:bg-slate-950 p-4 rounded-xl border border-slate-200 dark:border-slate-800">
+              <span className="text-slate-500 block">Total Nilai Kontrak BOQ</span>
+              <strong className="text-sm font-bold text-slate-900 dark:text-white font-mono mt-0.5 block">{formatRupiah(totalContractValue)}</strong>
+            </div>
+            <div className="bg-slate-50 dark:bg-slate-950 p-4 rounded-xl border border-slate-200 dark:border-slate-800">
+              <span className="text-slate-500 block">Realisasi Biaya Lapangan</span>
+              <strong className="text-sm font-bold text-emerald-600 dark:text-emerald-400 font-mono mt-0.5 block">{formatRupiah(totalRealizedValue)}</strong>
+            </div>
+            <div className="bg-slate-50 dark:bg-slate-950 p-4 rounded-xl border border-slate-200 dark:border-slate-800">
+              <span className="text-slate-500 block">Sisa Anggaran Alokasi</span>
+              <strong className="text-sm font-bold text-amber-600 dark:text-amber-400 font-mono mt-0.5 block">{formatRupiah(remainingValue)}</strong>
+            </div>
+            <div className="bg-slate-50 dark:bg-slate-950 p-4 rounded-xl border border-slate-200 dark:border-slate-800">
+              <span className="text-slate-500 block">Rata-Rata Progres Fisik</span>
+              <strong className="text-sm font-bold text-blue-600 dark:text-blue-400 font-mono mt-0.5 block">{overallProgressPercentage.toFixed(1)}%</strong>
+            </div>
+          </div>
+
+          {/* Live Working Paper Table */}
+          <div className="overflow-x-auto border border-slate-200 dark:border-slate-800 rounded-xl">
+            <table className="w-full text-left text-xs">
+              <thead className="bg-[#002060] text-white uppercase font-bold text-[10px] tracking-wider">
+                <tr>
+                  <th className="py-3 px-3">No</th>
+                  <th className="py-3 px-3">Kode</th>
+                  <th className="py-3 px-3">Kategori & Uraian Pekerjaan</th>
+                  <th className="py-3 px-3">Sat</th>
+                  <th className="py-3 px-3 text-right">Vol Kontrak</th>
+                  <th className="py-3 px-3 text-right">Vol Realisasi</th>
+                  <th className="py-3 px-3 text-center">Progres (%)</th>
+                  <th className="py-3 px-3 text-right">Harga Satuan</th>
+                  <th className="py-3 px-3 text-right">Total Kontrak (Rp)</th>
+                  <th className="py-3 px-3 text-right">Realisasi (Rp)</th>
+                  <th className="py-3 px-3 text-right">Deviasi (Rp)</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-200 dark:divide-slate-800 font-medium">
+                {filteredItems.map((item, idx) => {
+                  const progress = item.contractVolume > 0 ? (item.realizedVolume / item.contractVolume) * 100 : 0;
+                  const deviasi = (item.realizedPrice || 0) - item.totalPrice;
+                  return (
+                    <tr key={item.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/40">
+                      <td className="py-3 px-3 font-mono text-slate-500">{idx + 1}</td>
+                      <td className="py-3 px-3 font-mono font-bold text-amber-600 dark:text-amber-400">{item.itemCode}</td>
+                      <td className="py-3 px-3">
+                        <strong className="text-slate-900 dark:text-white block">{item.materialOrWork}</strong>
+                        <span className="text-[10px] text-slate-500">{item.category}</span>
+                      </td>
+                      <td className="py-3 px-3 text-slate-600 dark:text-slate-400">{item.unit}</td>
+                      <td className="py-3 px-3 text-right font-mono">{item.contractVolume}</td>
+                      <td className="py-3 px-3 text-right font-mono text-emerald-600 dark:text-emerald-400 font-bold">{item.realizedVolume}</td>
+                      <td className="py-3 px-3 text-center">
+                        <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-blue-500/10 text-blue-600 dark:text-blue-400">
+                          {progress.toFixed(1)}%
+                        </span>
+                      </td>
+                      <td className="py-3 px-3 text-right font-mono">{formatRupiah(item.unitPrice)}</td>
+                      <td className="py-3 px-3 text-right font-mono font-bold">{formatRupiah(item.totalPrice)}</td>
+                      <td className="py-3 px-3 text-right font-mono font-bold text-emerald-600 dark:text-emerald-400">{formatRupiah(item.realizedPrice || 0)}</td>
+                      <td className={`py-3 px-3 text-right font-mono font-bold ${deviasi > 0 ? 'text-rose-600' : 'text-emerald-600'}`}>
+                        {formatRupiah(deviasi)}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Signature & Verification Block */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-8 border-t border-slate-200 dark:border-slate-800 text-center text-xs">
+            <div className="space-y-12">
+              <p className="font-semibold text-slate-600 dark:text-slate-400">Disusun Oleh,</p>
+              <div className="border-b border-slate-400 w-3/4 mx-auto" />
+              <p className="font-bold text-slate-900 dark:text-white">Estimator & Cost Control</p>
+            </div>
+            <div className="space-y-12">
+              <p className="font-semibold text-slate-600 dark:text-slate-400">Disetujui Oleh,</p>
+              <div className="border-b border-slate-400 w-3/4 mx-auto" />
+              <p className="font-bold text-slate-900 dark:text-white">Project Manager PLN / SMK</p>
+            </div>
+            <div className="space-y-12">
+              <p className="font-semibold text-slate-600 dark:text-slate-400">Diketahui Oleh,</p>
+              <div className="border-b border-slate-400 w-3/4 mx-auto" />
+              <p className="font-bold text-slate-900 dark:text-white">Direktur Operasional PT Sapta Manunggal Karya</p>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <>
 
       {/* Summary Stat Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -623,6 +787,8 @@ export const BoqView: React.FC<BoqViewProps> = ({
             </form>
           </div>
         </div>
+      )}
+        </>
       )}
     </div>
   );

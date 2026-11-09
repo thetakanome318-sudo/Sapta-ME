@@ -824,7 +824,7 @@ export default function App() {
           )}
 
           {activeTab === 'warehouse-tual' && (
-            <WarehouseTualView />
+            <WarehouseTualView spbjList={spbjContracts} />
           )}
 
           {activeTab === 'master-data' && (
